@@ -1,0 +1,14 @@
+node_modules
+dist
+.env
+*.local
+.DS_Store
+tsconfig.tsbuildinfo
+
+# Personal / internal docs (not for the public repo)
+PROPOSAL.md
+PROPOSAL.en.md
+SUPABASE_SETUP.md
+DEPLOY.md
+RUNNING.md
+scripts/
