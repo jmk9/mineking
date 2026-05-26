@@ -1,29 +1,29 @@
-![Mine King](figure/banner.png)
+![MINE KING](figure/banner.png)
 
-# mineking
+# MINE KING
 
-환영합니다! 🚩 **mineking**은 단순히 지뢰만 찾는 평범한 지뢰찾기가 아니에요.
-다양한 테마 중에서 고를 수도, 색과 요소를 자유롭게 **조합**해 새로 만들 수도, 심지어
-**직접 그림을 그려서** 나만의 지뢰찾기를 꾸밀 수 있어요.
+Welcome! 🚩 **MINE KING** isn't your average Minesweeper.
+Pick from a variety of themes, mix and match your own from scratch, or even
+**draw your own** to make Minesweeper truly yours.
 
-깃발 모양도, 숫자 색감도, 보드와 앱 전체의 분위기도 — 전부 너의 손끝에서 바뀌어요.
-같은 지뢰찾기인데 매번 다른 게임이 되는 거죠. 친구한테 보여주면 "어 이거 지뢰찾기야?" 소리 들어요.
+The flag shape, the number colors, the look of the board and the whole app —
+all of it bends to your taste. Same Minesweeper, but never the same game twice.
 
-**▶ 지금 플레이: https://mineking.netlify.app/**
+**▶ Play now: https://mineking.netlify.app/**
 
 ![Preview](figure/preview.png)
 
-## 주요 기능
+## Features
 
-- **클래식 지뢰찾기 규칙** — 첫 클릭 안전 + 깃발 모드 + 코드(주변 한 번에 점검)
-- **돋보기 + 줌** — 손가락에 가려진 칸도 정확히 조준
-- **프리셋 테마 9종** — 클래식 · 레트로 · 파스텔 · 네온 · 포레스트 · 오션 · 석양 · 모노 · 포도
-- 테마가 보드뿐 아니라 **앱 전체 UI까지** 한꺼번에 리스킨
-- **나만의 테마 만들기** — 배경·타일·깃발 색, 깃발 모양, 숫자별 색을 자유롭게 조합
-- **이미지 업로드 / 직접 그리기** — 숫자와 깃발 그림을 너만의 일러스트로 교체
-- **PWA 설치형** — 홈 화면에 추가하면 앱처럼 전체화면 + 오프라인 OK
-- **클라우드 로그인** — 아이디/비밀번호로 어느 기기에서나 같은 진행도
+- **Classic Minesweeper rules** — first-click safety, flag mode, chording
+- **Magnifier loupe + zoom** — aim precisely even when your finger covers the cell
+- **9 preset themes** — Classic, Retro, Pastel, Neon, Forest, Ocean, Sunset, Mono, Grape
+- The active theme reskins **the whole app UI**, not just the board
+- **Build your own theme** — background, tile and flag colors, flag shape, per-number colors
+- **Image upload and on-device drawing** — replace number and flag glyphs with your own art
+- **Installable PWA** — add to home screen, full-screen play, works offline
+- **Cloud login** — sign in with a username and your progress follows you anywhere
 
-## 기술 스택
+## Tech
 
 React, TypeScript, Vite, HTML Canvas, vite-plugin-pwa, Supabase.
