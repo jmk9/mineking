@@ -1,8 +1,12 @@
+![Mine King](figure/banner.png)
+
 # mineking
 
 A custom Minesweeper web game with RPG-style meta progression.
 
 **▶ Play: https://mineking.netlify.app/**
+
+![Preview](figure/preview.png)
 
 ## Features
 
@@ -18,21 +22,3 @@ A custom Minesweeper web game with RPG-style meta progression.
 ## Tech
 
 React, TypeScript, Vite, HTML Canvas, vite-plugin-pwa, Supabase (auth + cloud save).
-
-## Local development
-
-```sh
-npm install
-npm run dev      # http://localhost:5173
-npm test         # unit tests
-npm run build    # production build to dist/
-```
-
-Optional `.env` for cloud features:
-
-```
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
-```
-
-If these are absent, the app runs in local-only mode (no login, progress saved in the browser).
