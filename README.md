@@ -2,23 +2,28 @@
 
 # mineking
 
-A custom Minesweeper web game with RPG-style meta progression.
+환영합니다! 🚩 **mineking**은 단순히 지뢰만 찾는 평범한 지뢰찾기가 아니에요.
+다양한 테마 중에서 고를 수도, 색과 요소를 자유롭게 **조합**해 새로 만들 수도, 심지어
+**직접 그림을 그려서** 나만의 지뢰찾기를 꾸밀 수 있어요.
 
-**▶ Play: https://mineking.netlify.app/**
+깃발 모양도, 숫자 색감도, 보드와 앱 전체의 분위기도 — 전부 너의 손끝에서 바뀌어요.
+같은 지뢰찾기인데 매번 다른 게임이 되는 거죠. 친구한테 보여주면 "어 이거 지뢰찾기야?" 소리 들어요.
+
+**▶ 지금 플레이: https://mineking.netlify.app/**
 
 ![Preview](figure/preview.png)
 
-## Features
+## 주요 기능
 
-- Classic Minesweeper with chording and first-click safety
-- Two input modes (open / flag) with a magnifier loupe for precise tapping
-- Pinch-friendly zoom, installable PWA (offline ready)
-- 9 preset themes plus a custom theme editor (colors, flag shape, image upload, on-device drawing)
-- Whole-app UI reskins with the active theme
-- RPG meta: coins, XP and leveling, tiered achievements, equippable cards, daily quests, profile page
-- Coin sink: unlock themes with coins in the shop
-- Cloud login (username + password) syncs progress across devices
+- **클래식 지뢰찾기 규칙** — 첫 클릭 안전 + 깃발 모드 + 코드(주변 한 번에 점검)
+- **돋보기 + 줌** — 손가락에 가려진 칸도 정확히 조준
+- **프리셋 테마 9종** — 클래식 · 레트로 · 파스텔 · 네온 · 포레스트 · 오션 · 석양 · 모노 · 포도
+- 테마가 보드뿐 아니라 **앱 전체 UI까지** 한꺼번에 리스킨
+- **나만의 테마 만들기** — 배경·타일·깃발 색, 깃발 모양, 숫자별 색을 자유롭게 조합
+- **이미지 업로드 / 직접 그리기** — 숫자와 깃발 그림을 너만의 일러스트로 교체
+- **PWA 설치형** — 홈 화면에 추가하면 앱처럼 전체화면 + 오프라인 OK
+- **클라우드 로그인** — 아이디/비밀번호로 어느 기기에서나 같은 진행도
 
-## Tech
+## 기술 스택
 
-React, TypeScript, Vite, HTML Canvas, vite-plugin-pwa, Supabase (auth + cloud save).
+React, TypeScript, Vite, HTML Canvas, vite-plugin-pwa, Supabase.
