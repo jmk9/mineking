@@ -6,7 +6,7 @@ import { PRESETS, defaultTheme } from '../render/presets';
 import { draftFromTheme, type ThemeDraft } from '../render/customTheme';
 import type { Theme } from '../render/theme';
 import { loadCoins, saveCoins } from '../storage/wallet';
-import { loadThemeId, saveThemeId } from '../storage/prefs';
+import { loadThemeId, saveThemeId, loadZoomEnabled, saveZoomEnabled } from '../storage/prefs';
 import { loadCustomThemes, saveCustomThemes } from '../storage/customThemes';
 import { loadUnlocks, saveUnlocks } from '../storage/unlocks';
 import { loadProgress, saveProgress } from '../storage/progress';
@@ -18,6 +18,7 @@ import { ResultOverlay } from './ResultOverlay';
 import { ThemePicker } from './ThemePicker';
 import { ThemeEditor } from './ThemeEditor';
 import { ProfilePage } from './ProfilePage';
+import { Settings } from './Settings';
 import { useElementWidth } from './useElementWidth';
 import { useElapsedSeconds } from './useTimer';
 
@@ -98,12 +99,20 @@ export function Game({ account }: GameProps = {}) {
   const elapsed = useElapsedSeconds(state);
 
   const [zoom, setZoom] = useState(1);
+  const [zoomEnabled, setZoomEnabled] = useState(() => loadZoomEnabled());
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
     const fit = Math.floor(availWidth / state.cols);
     return Math.max(MIN_CELL, Math.min(MAX_CELL, fit));
   }, [availWidth, state.cols]);
-  const cellSize = Math.round(baseCell * zoom);
+  const cellSize = Math.round(baseCell * (zoomEnabled ? zoom : 1));
+
+  const onZoomToggle = (enabled: boolean) => {
+    setZoomEnabled(enabled);
+    saveZoomEnabled(enabled);
+    if (!enabled) setZoom(1); // reset so re-enabling starts at 100%
+  };
 
   const minesLeft = state.mines - countFlags(state);
 
@@ -202,6 +211,9 @@ export function Game({ account }: GameProps = {}) {
           <button className="theme-btn" onClick={() => setPickerOpen(true)}>
             🎨
           </button>
+          <button className="theme-btn" onClick={() => setSettingsOpen(true)} aria-label="설정">
+            ⚙️
+          </button>
         </div>
       </header>
 
@@ -240,11 +252,13 @@ export function Game({ account }: GameProps = {}) {
           <BoardCanvas state={state} cellSize={cellSize} theme={theme} onCellTap={handleTap} />
         </div>
 
-        <div className="zoom-fab">
-          <button onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>－</button>
-          <span>{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>＋</button>
-        </div>
+        {zoomEnabled && (
+          <div className="zoom-fab">
+            <button onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>－</button>
+            <span>{Math.round(zoom * 100)}%</span>
+            <button onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>＋</button>
+          </div>
+        )}
       </section>
 
       <div className="segmented mode-toggle">
@@ -299,6 +313,14 @@ export function Game({ account }: GameProps = {}) {
           initial={editorDraft}
           onSave={saveTheme}
           onCancel={() => setEditorDraft(null)}
+        />
+      )}
+
+      {settingsOpen && (
+        <Settings
+          zoomEnabled={zoomEnabled}
+          onZoomToggle={onZoomToggle}
+          onClose={() => setSettingsOpen(false)}
         />
       )}
     </div>
