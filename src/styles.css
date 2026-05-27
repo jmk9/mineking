@@ -274,36 +274,63 @@ button:active {
   border-radius: 6px;
 }
 
-.zoom-fab {
+.zoom-control {
+  position: relative;
   align-self: center;
+}
+
+.zoom-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: color-mix(in srgb, var(--bg) 50%, var(--panel));
   border: 1px solid var(--panel-border);
   border-radius: 999px;
-  padding: 4px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  cursor: pointer;
   box-shadow: var(--shadow-sm);
 }
 
-.zoom-fab button {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  font-size: 18px;
-  font-weight: 800;
-  border-radius: 50%;
-  cursor: pointer;
+.zoom-popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(280px, 80vw);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+  z-index: 5;
+  animation: pop-in 0.18s ease;
 }
 
-.zoom-fab span {
-  font-size: 12px;
+.zoom-popover-head {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom-popover input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.zoom-marks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
-  min-width: 38px;
-  text-align: center;
+  margin-top: 2px;
 }
 
 .hint {

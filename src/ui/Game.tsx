@@ -101,6 +101,20 @@ export function Game({ account }: GameProps = {}) {
   const elapsed = useElapsedSeconds(state);
 
   const [zoom, setZoom] = useState(1);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const zoomRef = useRef<HTMLDivElement>(null);
+
+  // close zoom popover when tapping outside
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (zoomRef.current && !zoomRef.current.contains(e.target as Node)) {
+        setZoomOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
+  }, [zoomOpen]);
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
@@ -267,10 +281,28 @@ export function Game({ account }: GameProps = {}) {
           />
         </div>
 
-        <div className="zoom-fab">
-          <button onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>－</button>
-          <span>{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>＋</button>
+        <div className="zoom-control" ref={zoomRef}>
+          <button className="zoom-pill" onClick={() => setZoomOpen((o) => !o)} aria-label="줌">
+            🔍 {Math.round(zoom * 100)}%
+          </button>
+          {zoomOpen && (
+            <div className="zoom-popover">
+              <div className="zoom-popover-head">줌 {Math.round(zoom * 100)}%</div>
+              <input
+                type="range"
+                min={50}
+                max={200}
+                step={5}
+                value={Math.round(zoom * 100)}
+                onChange={(e) => setZoom(Number(e.currentTarget.value) / 100)}
+              />
+              <div className="zoom-marks">
+                <span>50%</span>
+                <span>100%</span>
+                <span>200%</span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
