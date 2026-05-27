@@ -8,6 +8,7 @@ interface Props {
   state: GameState;
   cellSize: number;
   theme: Theme;
+  loupeEnabled?: boolean;
   onCellTap: (r: number, c: number) => void;
 }
 
@@ -21,7 +22,7 @@ interface LoupePos {
   clientY: number;
 }
 
-export function BoardCanvas({ state, cellSize, theme, onCellTap }: Props) {
+export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCellTap }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const loupeRef = useRef<HTMLCanvasElement>(null);
   const downPos = useRef<{ x: number; y: number } | null>(null);
@@ -112,15 +113,19 @@ export function BoardCanvas({ state, cellSize, theme, onCellTap }: Props) {
   const handleDown = (e: React.PointerEvent) => {
     const p = localPoint(e);
     downPos.current = p;
-    drawLoupe(p.x, p.y);
-    setLoupe({ clientX: e.clientX, clientY: e.clientY });
+    if (loupeEnabled) {
+      drawLoupe(p.x, p.y);
+      setLoupe({ clientX: e.clientX, clientY: e.clientY });
+    }
   };
 
   const handleMove = (e: React.PointerEvent) => {
     if (!downPos.current) return;
     const p = localPoint(e);
-    drawLoupe(p.x, p.y);
-    setLoupe({ clientX: e.clientX, clientY: e.clientY });
+    if (loupeEnabled) {
+      drawLoupe(p.x, p.y);
+      setLoupe({ clientX: e.clientX, clientY: e.clientY });
+    }
   };
 
   const endInteraction = () => {

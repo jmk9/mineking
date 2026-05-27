@@ -1,5 +1,5 @@
 const THEME_KEY = 'ms_theme_v1';
-const ZOOM_ENABLED_KEY = 'ms_zoom_enabled_v1';
+const LOUPE_ENABLED_KEY = 'ms_loupe_enabled_v1';
 
 export function loadThemeId(): string | null {
   try {
@@ -17,18 +17,18 @@ export function saveThemeId(id: string): void {
   }
 }
 
-export function loadZoomEnabled(): boolean {
+export function loadLoupeEnabled(): boolean {
   try {
-    const v = localStorage.getItem(ZOOM_ENABLED_KEY);
+    const v = localStorage.getItem(LOUPE_ENABLED_KEY);
     return v == null ? true : v === '1';
   } catch {
     return true;
   }
 }
 
-export function saveZoomEnabled(v: boolean): void {
+export function saveLoupeEnabled(v: boolean): void {
   try {
-    localStorage.setItem(ZOOM_ENABLED_KEY, v ? '1' : '0');
+    localStorage.setItem(LOUPE_ENABLED_KEY, v ? '1' : '0');
   } catch {
     // ignore storage errors
   }

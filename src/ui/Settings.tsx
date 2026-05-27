@@ -1,10 +1,10 @@
 interface Props {
-  zoomEnabled: boolean;
-  onZoomToggle: (enabled: boolean) => void;
+  loupeEnabled: boolean;
+  onLoupeToggle: (enabled: boolean) => void;
   onClose: () => void;
 }
 
-export function Settings({ zoomEnabled, onZoomToggle, onClose }: Props) {
+export function Settings({ loupeEnabled, onLoupeToggle, onClose }: Props) {
   return (
     <div className="overlay" onClick={onClose}>
       <div className="settings-card" onClick={(e) => e.stopPropagation()}>
@@ -16,10 +16,10 @@ export function Settings({ zoomEnabled, onZoomToggle, onClose }: Props) {
         </div>
 
         <ToggleRow
-          label="줌 사용"
-          desc="보드 확대/축소 컨트롤을 표시합니다"
-          checked={zoomEnabled}
-          onChange={onZoomToggle}
+          label="돋보기 사용"
+          desc="터치할 때 손가락 위에 확대된 미리보기를 표시합니다"
+          checked={loupeEnabled}
+          onChange={onLoupeToggle}
         />
       </div>
     </div>

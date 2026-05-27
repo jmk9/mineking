@@ -6,7 +6,7 @@ import { PRESETS, defaultTheme } from '../render/presets';
 import { draftFromTheme, type ThemeDraft } from '../render/customTheme';
 import type { Theme } from '../render/theme';
 import { loadCoins, saveCoins } from '../storage/wallet';
-import { loadThemeId, saveThemeId, loadZoomEnabled, saveZoomEnabled } from '../storage/prefs';
+import { loadThemeId, saveThemeId, loadLoupeEnabled, saveLoupeEnabled } from '../storage/prefs';
 import { loadCustomThemes, saveCustomThemes } from '../storage/customThemes';
 import { loadUnlocks, saveUnlocks } from '../storage/unlocks';
 import { loadProgress, saveProgress } from '../storage/progress';
@@ -99,19 +99,18 @@ export function Game({ account }: GameProps = {}) {
   const elapsed = useElapsedSeconds(state);
 
   const [zoom, setZoom] = useState(1);
-  const [zoomEnabled, setZoomEnabled] = useState(() => loadZoomEnabled());
+  const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
     const fit = Math.floor(availWidth / state.cols);
     return Math.max(MIN_CELL, Math.min(MAX_CELL, fit));
   }, [availWidth, state.cols]);
-  const cellSize = Math.round(baseCell * (zoomEnabled ? zoom : 1));
+  const cellSize = Math.round(baseCell * zoom);
 
-  const onZoomToggle = (enabled: boolean) => {
-    setZoomEnabled(enabled);
-    saveZoomEnabled(enabled);
-    if (!enabled) setZoom(1); // reset so re-enabling starts at 100%
+  const onLoupeToggle = (enabled: boolean) => {
+    setLoupeEnabled(enabled);
+    saveLoupeEnabled(enabled);
   };
 
   const minesLeft = state.mines - countFlags(state);
@@ -249,16 +248,20 @@ export function Game({ account }: GameProps = {}) {
         </div>
 
         <div className="board-wrap" ref={boardWrapRef} style={{ background: theme.bg }}>
-          <BoardCanvas state={state} cellSize={cellSize} theme={theme} onCellTap={handleTap} />
+          <BoardCanvas
+            state={state}
+            cellSize={cellSize}
+            theme={theme}
+            loupeEnabled={loupeEnabled}
+            onCellTap={handleTap}
+          />
         </div>
 
-        {zoomEnabled && (
-          <div className="zoom-fab">
-            <button onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>－</button>
-            <span>{Math.round(zoom * 100)}%</span>
-            <button onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>＋</button>
-          </div>
-        )}
+        <div className="zoom-fab">
+          <button onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}>－</button>
+          <span>{Math.round(zoom * 100)}%</span>
+          <button onClick={() => setZoom((z) => Math.min(3, +(z + 0.25).toFixed(2)))}>＋</button>
+        </div>
       </section>
 
       <div className="segmented mode-toggle">
@@ -318,8 +321,8 @@ export function Game({ account }: GameProps = {}) {
 
       {settingsOpen && (
         <Settings
-          zoomEnabled={zoomEnabled}
-          onZoomToggle={onZoomToggle}
+          loupeEnabled={loupeEnabled}
+          onLoupeToggle={onLoupeToggle}
           onClose={() => setSettingsOpen(false)}
         />
       )}
