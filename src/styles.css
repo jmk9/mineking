@@ -243,6 +243,18 @@ button:active {
   padding: 6px;
 }
 
+/* Tablet — fit intermediate without horizontal scroll */
+@media (min-width: 768px) {
+  .game { max-width: 720px; }
+  .board-wrap { max-height: 70vh; }
+}
+
+/* Desktop — fit expert (16x30) without scroll */
+@media (min-width: 1024px) {
+  .game { max-width: 1080px; padding: 16px 16px 32px; }
+  .board-wrap { max-height: 78vh; }
+}
+
 .board-wrap canvas {
   border-radius: 6px;
 }
