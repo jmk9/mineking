@@ -2,13 +2,27 @@ interface Props {
   loupeEnabled: boolean;
   onLoupeToggle: (enabled: boolean) => void;
   account?: { name: string; onLogout: () => void };
+  canInstall?: boolean;
+  onInstall?: () => void;
   onClose: () => void;
 }
 
-export function Settings({ loupeEnabled, onLoupeToggle, account, onClose }: Props) {
+export function Settings({
+  loupeEnabled,
+  onLoupeToggle,
+  account,
+  canInstall,
+  onInstall,
+  onClose,
+}: Props) {
   const handleLogout = () => {
     onClose();
     account?.onLogout();
+  };
+
+  const handleInstall = () => {
+    onInstall?.();
+    onClose();
   };
 
   return (
@@ -27,6 +41,12 @@ export function Settings({ loupeEnabled, onLoupeToggle, account, onClose }: Prop
           checked={loupeEnabled}
           onChange={onLoupeToggle}
         />
+
+        {canInstall && (
+          <button className="install-btn" onClick={handleInstall}>
+            📲 앱 설치
+          </button>
+        )}
 
         {account && (
           <button className="logout-full-btn" onClick={handleLogout}>

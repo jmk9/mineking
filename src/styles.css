@@ -64,6 +64,7 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .brand {
@@ -73,6 +74,11 @@ button:active {
   font-weight: 800;
   font-size: 20px;
   letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  white-space: nowrap;
 }
 
 .brand-mark {
@@ -84,6 +90,17 @@ button:active {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .brand { font-size: 17px; gap: 6px; }
+  .brand-mark { font-size: 19px; }
+  .appbar-right { gap: 6px; }
+  .coin-pill { font-size: 13px; padding: 6px 10px; }
+  .profile-btn { font-size: 12px; padding: 6px 10px; }
+  .theme-btn { font-size: 13px; padding: 6px 10px; }
 }
 
 .coin-pill {
@@ -1154,9 +1171,23 @@ button:active {
   opacity: 1;
 }
 
+.install-btn {
+  width: 100%;
+  margin-top: 14px;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: none;
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
 .logout-full-btn {
   width: 100%;
-  margin-top: 18px;
+  margin-top: 14px;
   background: color-mix(in srgb, var(--bg) 50%, var(--panel));
   border: 1px solid var(--panel-border);
   color: var(--muted);

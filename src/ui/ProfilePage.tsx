@@ -92,7 +92,7 @@ export function ProfilePage({ progress, coins, account, onTogglePerk, onOpenRena
           {tab === 'stats' && (
             <ul className="stat-list">
               <li><span>플레이</span><b>{s.gamesPlayed}</b></li>
-              <li><span>승 / 패</span><b>{s.wins} / {s.losses}</b></li>
+              <li><span>승</span><b>{s.wins}</b></li>
               <li><span>승률</span><b>{winRate}%</b></li>
               <li><span>최고 연승</span><b>{s.bestStreak}</b></li>
               <li><span>노-플래그 클리어</span><b>{s.noFlagWins}</b></li>

@@ -20,6 +20,7 @@ import { ThemeEditor } from './ThemeEditor';
 import { ProfilePage } from './ProfilePage';
 import { Settings } from './Settings';
 import { NameEditor } from './NameEditor';
+import { usePWAInstall } from './usePWAInstall';
 import { useElementWidth } from './useElementWidth';
 import { useElapsedSeconds } from './useTimer';
 
@@ -103,6 +104,7 @@ export function Game({ account }: GameProps = {}) {
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
+  const { canInstall, install } = usePWAInstall();
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
     const fit = Math.floor(availWidth / state.cols);
@@ -343,6 +345,8 @@ export function Game({ account }: GameProps = {}) {
           loupeEnabled={loupeEnabled}
           onLoupeToggle={onLoupeToggle}
           account={account}
+          canInstall={canInstall}
+          onInstall={install}
           onClose={() => setSettingsOpen(false)}
         />
       )}
