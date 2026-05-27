@@ -1,9 +1,15 @@
+import { useState } from 'react';
+import { InstallHelp } from './InstallHelp';
+import type { Platform } from './usePWAInstall';
+
 interface Props {
   loupeEnabled: boolean;
   onLoupeToggle: (enabled: boolean) => void;
   account?: { name: string; onLogout: () => void };
   canInstall?: boolean;
   onInstall?: () => void;
+  standalone?: boolean;
+  platform?: Platform;
   onClose: () => void;
 }
 
@@ -13,16 +19,24 @@ export function Settings({
   account,
   canInstall,
   onInstall,
+  standalone,
+  platform = 'other',
   onClose,
 }: Props) {
+  const [helpOpen, setHelpOpen] = useState(false);
+
   const handleLogout = () => {
     onClose();
     account?.onLogout();
   };
 
   const handleInstall = () => {
-    onInstall?.();
-    onClose();
+    if (canInstall) {
+      onInstall?.();
+      onClose();
+    } else {
+      setHelpOpen(true);
+    }
   };
 
   return (
@@ -42,9 +56,9 @@ export function Settings({
           onChange={onLoupeToggle}
         />
 
-        {canInstall && (
+        {!standalone && (
           <button className="install-btn" onClick={handleInstall}>
-            📲 앱 설치
+            📲 앱 설치{canInstall ? '' : ' 안내'}
           </button>
         )}
 
@@ -53,6 +67,8 @@ export function Settings({
             로그아웃 ({account.name})
           </button>
         )}
+
+        {helpOpen && <InstallHelp platform={platform} onClose={() => setHelpOpen(false)} />}
       </div>
     </div>
   );

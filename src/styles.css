@@ -97,21 +97,23 @@ button:active {
 @media (max-width: 480px) {
   .brand { font-size: 17px; gap: 6px; }
   .brand-mark { font-size: 19px; }
-  .appbar-right { gap: 6px; }
-  .coin-pill { font-size: 13px; padding: 6px 10px; }
-  .profile-btn { font-size: 12px; padding: 6px 10px; }
-  .theme-btn { font-size: 13px; padding: 6px 10px; }
+  .appbar-right { gap: 5px; }
+  .coin-pill { font-size: 12px; padding: 5px 9px; }
+  .profile-btn { font-size: 12px; padding: 5px 9px; }
+  .theme-btn { font-size: 13px; padding: 5px 9px; }
+  .segmented button { padding: 6px; font-size: 13px; }
 }
 
 .coin-pill {
   font-weight: 800;
-  font-size: 15px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
   color: #4a2c00;
   border-radius: 999px;
-  padding: 8px 14px;
+  padding: 6px 11px;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+  white-space: nowrap;
 }
 
 .theme-btn {
@@ -147,9 +149,9 @@ button:active {
   background: transparent;
   border: none;
   color: var(--muted);
-  border-radius: 12px;
-  padding: 11px;
-  font-size: 15px;
+  border-radius: 10px;
+  padding: 7px 8px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -1183,6 +1185,25 @@ button:active {
   font-weight: 800;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
+}
+
+.install-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.install-steps li {
+  padding: 4px 0;
+}
+
+.install-steps b {
+  color: var(--accent);
 }
 
 .logout-full-btn {

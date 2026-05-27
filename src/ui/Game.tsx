@@ -104,7 +104,7 @@ export function Game({ account }: GameProps = {}) {
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
-  const { canInstall, install } = usePWAInstall();
+  const { canInstall, install, standalone, platform } = usePWAInstall();
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
     const fit = Math.floor(availWidth / state.cols);
@@ -347,6 +347,8 @@ export function Game({ account }: GameProps = {}) {
           account={account}
           canInstall={canInstall}
           onInstall={install}
+          standalone={standalone}
+          platform={platform}
           onClose={() => setSettingsOpen(false)}
         />
       )}
