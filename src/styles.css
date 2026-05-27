@@ -102,6 +102,7 @@ button:active {
   .profile-btn { font-size: 12px; padding: 5px 9px; }
   .theme-btn { font-size: 13px; padding: 5px 9px; }
   .segmented button { padding: 6px; font-size: 13px; }
+  .mode-toggle button { padding: 9px; font-size: 14px; }
 }
 
 .coin-pill {
@@ -163,8 +164,8 @@ button:active {
 }
 
 .mode-toggle button {
-  padding: 15px;
-  font-size: 17px;
+  padding: 10px;
+  font-size: 15px;
 }
 
 /* ---------- Board card ---------- */
@@ -243,16 +244,30 @@ button:active {
   padding: 6px;
 }
 
-/* Tablet — fit intermediate without horizontal scroll */
+/* Tablet+ — single-screen layout: page doesn't scroll, board area
+   grows to fill remaining height. Internal scroll on the board appears
+   only when the cell minimum is larger than the available area. */
 @media (min-width: 768px) {
-  .game { max-width: 720px; }
-  .board-wrap { max-height: 70vh; }
+  body { overflow: hidden; }
+  .game {
+    max-width: 720px;
+    height: 100vh;
+    min-height: 0;
+  }
+  .board-card {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .board-card .board-wrap {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+  }
 }
 
-/* Desktop — fit expert (16x30) without scroll */
+/* Desktop — wider container so expert (16x30) fits horizontally */
 @media (min-width: 1024px) {
   .game { max-width: 1080px; padding: 16px 16px 32px; }
-  .board-wrap { max-height: 78vh; }
 }
 
 .board-wrap canvas {
