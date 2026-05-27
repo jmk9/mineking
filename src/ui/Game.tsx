@@ -214,12 +214,11 @@ export function Game({ account }: GameProps = {}) {
           <span className="brand-name">지뢰왕</span>
         </div>
         <div className="appbar-right">
-          <span className="coin-pill">🪙 {coins}</span>
           <button className="profile-btn" onClick={() => setProfileOpen(true)}>
             👤 Lv {levelInfo(progress.xp).level}
           </button>
-          <button className="theme-btn" onClick={() => setPickerOpen(true)}>
-            🎨
+          <button className="theme-btn" onClick={() => setPickerOpen(true)} aria-label="상점">
+            🛒
           </button>
           <button className="theme-btn" onClick={() => setSettingsOpen(true)} aria-label="설정">
             ⚙️

@@ -468,6 +468,15 @@ button:active {
   font-variant-numeric: tabular-nums;
 }
 
+.shop-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 4px 4px 8px;
+}
+
 .theme-price {
   font-size: 12px;
   font-weight: 700;

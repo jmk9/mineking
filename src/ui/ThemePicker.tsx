@@ -34,12 +34,14 @@ export function ThemePicker({
     <div className="overlay" onClick={onClose}>
       <div className="picker-card" onClick={(e) => e.stopPropagation()}>
         <div className="picker-head">
-          <span>테마 선택</span>
+          <span>상점</span>
           <span className="picker-coins">🪙 {coins}</span>
           <button className="picker-close" onClick={onClose}>
             ✕
           </button>
         </div>
+
+        <div className="shop-section-title">테마</div>
 
         <div className="theme-list">
           {themes.map((theme) => {
