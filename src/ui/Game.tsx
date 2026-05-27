@@ -277,6 +277,8 @@ export function Game({ account }: GameProps = {}) {
             cellSize={cellSize}
             theme={theme}
             loupeEnabled={loupeEnabled}
+            zoom={zoom}
+            onZoomChange={(z) => setZoom(Math.max(0.5, Math.min(2.0, z)))}
             onCellTap={handleTap}
           />
         </div>

@@ -9,6 +9,8 @@ interface Props {
   cellSize: number;
   theme: Theme;
   loupeEnabled?: boolean;
+  zoom: number;
+  onZoomChange: (z: number) => void;
   onCellTap: (r: number, c: number) => void;
 }
 
@@ -16,23 +18,44 @@ const TAP_MOVE_TOLERANCE = 14; // px; beyond this a pointer gesture is a scroll,
 const LOUPE_SIZE = 116; // css px of the magnifier
 const LOUPE_MAG = 2.5; // magnification factor
 const LOUPE_OFFSET_Y = 28; // how far above the finger the loupe floats
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 2.0;
 
 interface LoupePos {
   clientX: number;
   clientY: number;
 }
 
-export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCellTap }: Props) {
+interface Point {
+  x: number;
+  y: number;
+}
+
+function dist(a: Point, b: Point): number {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+export function BoardCanvas({
+  state,
+  cellSize,
+  theme,
+  loupeEnabled = true,
+  zoom,
+  onZoomChange,
+  onCellTap,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const loupeRef = useRef<HTMLCanvasElement>(null);
   const downPos = useRef<{ x: number; y: number } | null>(null);
   const [loupe, setLoupe] = useState<LoupePos | null>(null);
+  // Multi-touch pinch tracking
+  const pointers = useRef<Map<number, Point>>(new Map());
+  const pinchRef = useRef<{ initialDist: number; initialZoom: number } | null>(null);
 
   const boardCssW = state.cols * cellSize;
   const boardCssH = state.rows * cellSize;
-  const glyphV = useGlyphs(theme); // bumps when custom glyph images finish loading
+  const glyphV = useGlyphs(theme);
 
-  // Redraw the board whenever the game state, size, theme, or glyphs change.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -51,7 +74,6 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   };
 
-  /** Draw a magnified crop of the board around (px,py) into the loupe canvas. */
   const drawLoupe = (px: number, py: number) => {
     const board = canvasRef.current;
     const lc = loupeRef.current;
@@ -62,8 +84,7 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     lc.width = Math.round(LOUPE_SIZE * dprL);
     lc.height = Math.round(LOUPE_SIZE * dprL);
 
-    const srcCss = LOUPE_SIZE / LOUPE_MAG; // css px of board shown in the loupe
-    // center the crop on the finger, but keep it inside the board edges
+    const srcCss = LOUPE_SIZE / LOUPE_MAG;
     const cx = Math.max(srcCss / 2, Math.min(boardCssW - srcCss / 2, px));
     const cy = Math.max(srcCss / 2, Math.min(boardCssH - srcCss / 2, py));
     const sxCss = cx - srcCss / 2;
@@ -87,7 +108,6 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
 
     ctx.setTransform(dprL, 0, 0, dprL, 0, 0);
 
-    // highlight the targeted cell
     const cell = pointToCell(px, py, state, cellSize);
     if (cell) {
       const lx = ((cell.c * cellSize - sxCss) / srcCss) * LOUPE_SIZE;
@@ -98,7 +118,6 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
       ctx.strokeRect(lx, ly, lsize, lsize);
     }
 
-    // red dot marking the exact press point
     const dotX = ((px - sxCss) / srcCss) * LOUPE_SIZE;
     const dotY = ((py - syCss) / srcCss) * LOUPE_SIZE;
     ctx.beginPath();
@@ -110,7 +129,8 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     ctx.stroke();
   };
 
-  const handleDown = (e: React.PointerEvent) => {
+  // -------- single-touch handlers (tap / loupe) --------
+  const startSingle = (e: React.PointerEvent) => {
     const p = localPoint(e);
     downPos.current = p;
     if (loupeEnabled) {
@@ -119,7 +139,7 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     }
   };
 
-  const handleMove = (e: React.PointerEvent) => {
+  const moveSingle = (e: React.PointerEvent) => {
     if (!downPos.current) return;
     const p = localPoint(e);
     if (loupeEnabled) {
@@ -128,22 +148,74 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     }
   };
 
-  const endInteraction = () => {
+  const endSingle = (e: React.PointerEvent) => {
+    const start = downPos.current;
     downPos.current = null;
     setLoupe(null);
-  };
-
-  const handleUp = (e: React.PointerEvent) => {
-    const start = downPos.current;
-    endInteraction();
     if (!start) return;
     const end = localPoint(e);
-    if (Math.hypot(end.x - start.x, end.y - start.y) > TAP_MOVE_TOLERANCE) return; // was a pan
+    if (Math.hypot(end.x - start.x, end.y - start.y) > TAP_MOVE_TOLERANCE) return;
     const cell = pointToCell(end.x, end.y, state, cellSize);
     if (cell) onCellTap(cell.r, cell.c);
   };
 
-  // Place the loupe above the finger, clamped to the viewport.
+  const cancelSingle = () => {
+    downPos.current = null;
+    setLoupe(null);
+  };
+
+  // -------- combined dispatcher (single tap + pinch) --------
+  const onPointerDown = (e: React.PointerEvent) => {
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+
+    if (pointers.current.size === 2) {
+      // entering pinch — cancel any single-touch interaction
+      cancelSingle();
+      const pts = Array.from(pointers.current.values()).slice(0, 2);
+      pinchRef.current = { initialDist: dist(pts[0], pts[1]), initialZoom: zoom };
+      return;
+    }
+    if (pointers.current.size === 1) startSingle(e);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pinchRef.current && pointers.current.size >= 2) {
+      const pts = Array.from(pointers.current.values()).slice(0, 2);
+      const newDist = dist(pts[0], pts[1]);
+      if (newDist > 0) {
+        const ratio = newDist / pinchRef.current.initialDist;
+        const z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, pinchRef.current.initialZoom * ratio));
+        onZoomChange(z);
+      }
+      return;
+    }
+    if (!pinchRef.current) moveSingle(e);
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    pointers.current.delete(e.pointerId);
+
+    if (pinchRef.current) {
+      // pinch ends as soon as any finger lifts; remaining finger doesn't become a tap
+      if (pointers.current.size < 2) {
+        pinchRef.current = null;
+        cancelSingle();
+      }
+      return;
+    }
+    endSingle(e);
+  };
+
+  const onPointerCancel = (e: React.PointerEvent) => {
+    pointers.current.delete(e.pointerId);
+    pinchRef.current = null;
+    cancelSingle();
+  };
+
   const loupeStyle: React.CSSProperties | undefined = loupe
     ? {
         position: 'fixed',
@@ -163,11 +235,11 @@ export function BoardCanvas({ state, cellSize, theme, loupeEnabled = true, onCel
     <>
       <canvas
         ref={canvasRef}
-        onPointerDown={handleDown}
-        onPointerMove={handleMove}
-        onPointerUp={handleUp}
-        onPointerCancel={endInteraction}
-        style={{ touchAction: 'manipulation', display: 'block' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
+        style={{ touchAction: 'pan-x pan-y', display: 'block' }}
       />
       <canvas ref={loupeRef} style={loupeStyle} hidden={!loupe} />
     </>
