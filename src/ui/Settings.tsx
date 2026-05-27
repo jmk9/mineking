@@ -17,7 +17,7 @@ export function Settings({ loupeEnabled, onLoupeToggle, onClose }: Props) {
 
         <ToggleRow
           label="돋보기 사용"
-          desc="터치할 때 손가락 위에 확대된 미리보기를 표시합니다"
+          desc="터치한 위치를 동그란 확대뷰로 보여줘요"
           checked={loupeEnabled}
           onChange={onLoupeToggle}
         />
