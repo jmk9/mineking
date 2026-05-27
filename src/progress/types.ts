@@ -29,6 +29,8 @@ export interface PlayerProgress {
   achievements: Record<string, number>; // achievementId -> tiers already claimed
   perksEquipped: string[];
   daily: DailyQuestState;
+  /** Optional display name; falls back to login username when empty. */
+  displayName?: string;
 }
 
 /** Outcome of one finished game, fed into the progression engine. */

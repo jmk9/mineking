@@ -12,6 +12,7 @@ interface Props {
   coins: number;
   account?: { name: string; onLogout: () => void };
   onTogglePerk: (id: string) => void;
+  onOpenRename?: () => void;
   onClose: () => void;
 }
 
@@ -25,7 +26,7 @@ function Bar({ pct, color }: { pct: number; color?: string }) {
   );
 }
 
-export function ProfilePage({ progress, coins, account, onTogglePerk, onClose }: Props) {
+export function ProfilePage({ progress, coins, account, onTogglePerk, onOpenRename, onClose }: Props) {
   const [tab, setTab] = useState<Tab>('stats');
   const { level, intoLevel, neededForNext } = levelInfo(progress.xp);
   const slots = perkSlots(level);
@@ -55,7 +56,19 @@ export function ProfilePage({ progress, coins, account, onTogglePerk, onClose }:
 
         {account && (
           <div className="account-row">
-            <span className="account-name">👤 {account.name}</span>
+            <div className="account-name-wrap">
+              <span className="account-name">
+                👤 {progress.displayName || account.name}
+              </span>
+              {progress.displayName && (
+                <span className="account-handle">@{account.name}</span>
+              )}
+              {onOpenRename && (
+                <button className="rename-btn" onClick={onOpenRename} aria-label="이름 변경">
+                  ✏️
+                </button>
+              )}
+            </div>
             <button className="logout-btn" onClick={account.onLogout}>
               로그아웃
             </button>

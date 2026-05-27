@@ -15,6 +15,7 @@ export function loadProgress(): PlayerProgress {
       achievements: p.achievements ?? {},
       perksEquipped: Array.isArray(p.perksEquipped) ? p.perksEquipped : [],
       daily: p.daily ?? base.daily,
+      displayName: typeof p.displayName === 'string' ? p.displayName : undefined,
     };
   } catch {
     return defaultProgress();

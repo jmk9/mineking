@@ -1111,15 +1111,46 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   background: color-mix(in srgb, var(--bg) 55%, var(--panel));
   border-radius: 12px;
   padding: 8px 12px;
   margin-bottom: 12px;
 }
 
+.account-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
 .account-name {
   font-weight: 700;
   font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-handle {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.rename-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  opacity: 0.7;
+}
+
+.rename-btn:hover {
+  opacity: 1;
 }
 
 .logout-btn {
@@ -1131,6 +1162,21 @@ button:active {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.row-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.row-buttons .tool {
+  flex: 1;
+}
+
+.row-buttons .result-btn {
+  flex: 2;
 }
 
 /* ---------- Settings ---------- */

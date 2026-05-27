@@ -19,6 +19,7 @@ import { ThemePicker } from './ThemePicker';
 import { ThemeEditor } from './ThemeEditor';
 import { ProfilePage } from './ProfilePage';
 import { Settings } from './Settings';
+import { NameEditor } from './NameEditor';
 import { useElementWidth } from './useElementWidth';
 import { useElapsedSeconds } from './useTimer';
 
@@ -101,6 +102,7 @@ export function Game({ account }: GameProps = {}) {
   const [zoom, setZoom] = useState(1);
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [nameEditorOpen, setNameEditorOpen] = useState(false);
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
     const fit = Math.floor(availWidth / state.cols);
@@ -111,6 +113,13 @@ export function Game({ account }: GameProps = {}) {
   const onLoupeToggle = (enabled: boolean) => {
     setLoupeEnabled(enabled);
     saveLoupeEnabled(enabled);
+  };
+
+  const renameProfile = (name: string) => {
+    const next: PlayerProgress = { ...progress, displayName: name || undefined };
+    setProgress(next);
+    saveProgress(next);
+    setNameEditorOpen(false);
   };
 
   const minesLeft = state.mines - countFlags(state);
@@ -290,7 +299,17 @@ export function Game({ account }: GameProps = {}) {
           coins={coins}
           account={account}
           onTogglePerk={onTogglePerk}
+          onOpenRename={account ? () => setNameEditorOpen(true) : undefined}
           onClose={() => setProfileOpen(false)}
+        />
+      )}
+
+      {nameEditorOpen && account && (
+        <NameEditor
+          initial={progress.displayName}
+          username={account.name}
+          onSave={renameProfile}
+          onClose={() => setNameEditorOpen(false)}
         />
       )}
 
