@@ -342,6 +342,7 @@ export function Game({ account }: GameProps = {}) {
         <Settings
           loupeEnabled={loupeEnabled}
           onLoupeToggle={onLoupeToggle}
+          account={account}
           onClose={() => setSettingsOpen(false)}
         />
       )}

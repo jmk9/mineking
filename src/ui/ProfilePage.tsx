@@ -55,23 +55,21 @@ export function ProfilePage({ progress, coins, account, onTogglePerk, onOpenRena
         </div>
 
         {account && (
-          <div className="account-row">
-            <div className="account-name-wrap">
-              <span className="account-name">
-                👤 {progress.displayName || account.name}
+          <div className="profile-id-row">
+            <span className="profile-id-emoji">👤</span>
+            <div className="profile-id-main">
+              <span className="profile-id-name">
+                {progress.displayName || account.name}
               </span>
               {progress.displayName && (
-                <span className="account-handle">@{account.name}</span>
-              )}
-              {onOpenRename && (
-                <button className="rename-btn" onClick={onOpenRename} aria-label="이름 변경">
-                  ✏️
-                </button>
+                <span className="profile-id-handle">@{account.name}</span>
               )}
             </div>
-            <button className="logout-btn" onClick={account.onLogout}>
-              로그아웃
-            </button>
+            {onOpenRename && (
+              <button className="rename-btn" onClick={onOpenRename} aria-label="이름 변경">
+                ✏️
+              </button>
+            )}
           </div>
         )}
 

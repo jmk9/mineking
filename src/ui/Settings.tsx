@@ -1,10 +1,16 @@
 interface Props {
   loupeEnabled: boolean;
   onLoupeToggle: (enabled: boolean) => void;
+  account?: { name: string; onLogout: () => void };
   onClose: () => void;
 }
 
-export function Settings({ loupeEnabled, onLoupeToggle, onClose }: Props) {
+export function Settings({ loupeEnabled, onLoupeToggle, account, onClose }: Props) {
+  const handleLogout = () => {
+    onClose();
+    account?.onLogout();
+  };
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="settings-card" onClick={(e) => e.stopPropagation()}>
@@ -21,6 +27,12 @@ export function Settings({ loupeEnabled, onLoupeToggle, onClose }: Props) {
           checked={loupeEnabled}
           onChange={onLoupeToggle}
         />
+
+        {account && (
+          <button className="logout-full-btn" onClick={handleLogout}>
+            로그아웃 ({account.name})
+          </button>
+        )}
       </div>
     </div>
   );

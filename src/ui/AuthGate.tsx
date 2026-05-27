@@ -83,6 +83,11 @@ export function AuthGate() {
       if (mode === 'signup') {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) return setError(translateError(error.message));
+        // Supabase returns a fake user with empty `identities` when the email
+        // is already in use (to prevent enumeration). Treat that as a duplicate.
+        if (data.user && (data.user.identities?.length ?? 0) === 0) {
+          return setError('이미 사용 중인 아이디예요.');
+        }
         if (!data.session) {
           return setError('이메일 확인 설정이 켜져 있어요. Supabase에서 "Confirm email"을 꺼주세요.');
         }
