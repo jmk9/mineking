@@ -372,6 +372,7 @@ export function Game({ account }: GameProps = {}) {
       {editorDraft && (
         <ThemeEditor
           initial={editorDraft}
+          coins={coins}
           onSave={saveTheme}
           onCancel={() => setEditorDraft(null)}
         />

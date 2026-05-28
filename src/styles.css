@@ -454,6 +454,13 @@ button:active {
   box-shadow: var(--shadow-sm);
 }
 
+.result-btn:disabled {
+  background: color-mix(in srgb, var(--bg) 40%, var(--panel));
+  color: var(--muted);
+  box-shadow: none;
+  cursor: default;
+}
+
 /* ---------- Theme picker ---------- */
 .picker-head {
   display: flex;

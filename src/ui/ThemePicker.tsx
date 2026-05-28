@@ -1,4 +1,4 @@
-import { CUSTOM_THEME_COST, PRESETS, themePrice } from '../render/presets';
+import { PRESETS, themePrice } from '../render/presets';
 import { isCustom } from '../render/customTheme';
 import type { Theme } from '../render/theme';
 import { ThemeSwatch } from './ThemeSwatch';
@@ -96,14 +96,8 @@ export function ThemePicker({
           })}
         </div>
 
-        <button
-          className="create-btn"
-          onClick={onCreate}
-          disabled={coins < CUSTOM_THEME_COST}
-        >
-          {coins < CUSTOM_THEME_COST
-            ? `＋ 새 테마 만들기 (코인 부족 · 🪙${CUSTOM_THEME_COST})`
-            : `＋ 새 테마 만들기 (🪙${CUSTOM_THEME_COST})`}
+        <button className="create-btn" onClick={onCreate}>
+          ＋ 새 테마 만들기
         </button>
       </div>
     </div>

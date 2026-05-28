@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { buildCustomTheme, newCustomId, type ThemeDraft } from '../render/customTheme';
+import { CUSTOM_THEME_COST } from '../render/presets';
 import type { FlagShape, Theme } from '../render/theme';
 import { ThemeSwatch } from './ThemeSwatch';
 import { DrawPad } from './DrawPad';
@@ -16,6 +17,7 @@ const FLAG_SHAPES: { value: FlagShape; label: string }[] = [
 
 interface Props {
   initial: ThemeDraft;
+  coins: number;
   onSave: (theme: Theme) => void;
   onCancel: () => void;
 }
@@ -37,7 +39,8 @@ function ColorField({
   );
 }
 
-export function ThemeEditor({ initial, onSave, onCancel }: Props) {
+export function ThemeEditor({ initial, coins, onSave, onCancel }: Props) {
+  const canAfford = coins >= CUSTOM_THEME_COST;
   const [draft, setDraft] = useState<ThemeDraft>(initial);
   const [slot, setSlot] = useState<Slot>('flag');
   const [drawOpen, setDrawOpen] = useState(false);
@@ -175,8 +178,12 @@ export function ThemeEditor({ initial, onSave, onCancel }: Props) {
           </div>
         </div>
 
-        <button className="result-btn" onClick={() => onSave(buildCustomTheme(draft, newCustomId()))}>
-          저장
+        <button
+          className="result-btn"
+          disabled={!canAfford}
+          onClick={() => onSave(buildCustomTheme(draft, newCustomId()))}
+        >
+          {canAfford ? `저장 (🪙 ${CUSTOM_THEME_COST})` : `코인 부족 (🪙 ${coins} / ${CUSTOM_THEME_COST})`}
         </button>
 
         <input
