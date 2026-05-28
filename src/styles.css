@@ -104,26 +104,6 @@ button:active {
   .segmented button { padding: 6px; font-size: 13px; }
   .mode-toggle button { padding: 9px; font-size: 14px; }
 
-  /* Full-bleed board area: break out of .game's 14px side padding
-     so the play surface uses the whole screen width. */
-  .board-card {
-    margin-left: -14px;
-    margin-right: -14px;
-    padding-left: 0;
-    padding-right: 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-  .board-card .hud {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-  .board-wrap {
-    padding-left: 0;
-    padding-right: 0;
-    border-radius: 0;
-  }
 }
 
 .coin-pill {
@@ -1398,4 +1378,26 @@ button:active {
 .switch.on .switch-knob {
   transform: translateX(20px);
   background: var(--accent-text);
+}
+
+/* ---------- Mobile full-bleed board (must come AFTER base rules) ---------- */
+@media (max-width: 480px) {
+  .board-card {
+    margin-left: -14px;
+    margin-right: -14px;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  .board-card .hud {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .board-wrap {
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 0;
+  }
 }
