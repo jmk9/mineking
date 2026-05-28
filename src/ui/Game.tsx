@@ -121,10 +121,10 @@ export function Game({ account }: GameProps = {}) {
   const { canInstall, install, standalone, platform } = usePWAInstall();
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
-    const fit = Math.floor(availWidth / state.cols);
+    const fit = availWidth / state.cols;
     return Math.max(MIN_CELL, Math.min(MAX_CELL, fit));
   }, [availWidth, state.cols]);
-  const cellSize = Math.round(baseCell * zoom);
+  const cellSize = baseCell * zoom;
 
   const onLoupeToggle = (enabled: boolean) => {
     setLoupeEnabled(enabled);
