@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { chord, createGame, reveal, toggleFlag } from '../game';
 import { computeScore, type ScoreBreakdown } from '../game/scoring';
 import { DIFFICULTIES, type DifficultyName, type GameState } from '../game/types';
-import { PRESETS, defaultTheme } from '../render/presets';
+import { CUSTOM_THEME_COST, PRESETS, defaultTheme } from '../render/presets';
 import { draftFromTheme, type ThemeDraft } from '../render/customTheme';
 import type { Theme } from '../render/theme';
 import { loadCoins, saveCoins } from '../storage/wallet';
@@ -164,6 +164,10 @@ export function Game({ account }: GameProps = {}) {
   };
 
   const saveTheme = (created: Theme) => {
+    if (coins < CUSTOM_THEME_COST) return; // safety guard; UI also blocks
+    const balance = coins - CUSTOM_THEME_COST;
+    setCoins(balance);
+    saveCoins(balance);
     const next = [...customThemes, created];
     setCustomThemes(next);
     saveCustomThemes(next);

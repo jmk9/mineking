@@ -596,6 +596,12 @@ button:active {
   border: 1px dashed var(--muted);
 }
 
+.create-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  color: var(--muted);
+}
+
 /* ---------- Theme editor ---------- */
 .editor-preview {
   display: flex;

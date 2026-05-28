@@ -220,3 +220,6 @@ export function getTheme(id: string): Theme {
 export function themePrice(theme: Theme): number {
   return theme.tier === 0 ? 0 : 300;
 }
+
+/** Coin cost to create a custom theme (drawing/image/color editor). */
+export const CUSTOM_THEME_COST = 1000;
