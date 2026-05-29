@@ -43,6 +43,7 @@ import { useBGM } from './useBGM';
 /** Background music tracks served from public/audio/. Missing files are silent. */
 const BGM_TRACKS = {
   main: '/audio/main.mp3',
+  training: '/audio/training.mp3',
   small: '/audio/tier1.mp3',
   medium: '/audio/tier2.mp3',
   large: '/audio/tier3.mp3',
@@ -180,12 +181,14 @@ export function Game({ account }: GameProps = {}) {
   };
 
   // Pick the right BGM track for the current view: a dungeon run uses its
-  // size-tier track; everything else (quickplay, menus, overlays) uses main.
+  // size-tier track, 수련장 has its own track, and the lobby falls back to
+  // main. Overlays (settings/profile/picker) stay on whatever's underneath.
   const currentBgmSrc = (() => {
     if (adventureRun && dungeonViewOpen && !dungeonResult) {
       const dungeon = getDungeon(adventureRun.dungeonId);
       if (dungeon) return BGM_TRACKS[dungeon.sizeTier];
     }
+    if (view === 'training') return BGM_TRACKS.training;
     return BGM_TRACKS.main;
   })();
 
