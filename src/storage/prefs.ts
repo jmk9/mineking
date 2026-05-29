@@ -1,5 +1,7 @@
 const THEME_KEY = 'ms_theme_v1';
 const LOUPE_ENABLED_KEY = 'ms_loupe_enabled_v1';
+const BGM_ENABLED_KEY = 'ms_bgm_enabled_v1';
+const BGM_VOLUME_KEY = 'ms_bgm_volume_v1';
 
 export function loadThemeId(): string | null {
   try {
@@ -31,5 +33,41 @@ export function saveLoupeEnabled(v: boolean): void {
     localStorage.setItem(LOUPE_ENABLED_KEY, v ? '1' : '0');
   } catch {
     // ignore storage errors
+  }
+}
+
+export function loadBgmEnabled(): boolean {
+  try {
+    const v = localStorage.getItem(BGM_ENABLED_KEY);
+    return v == null ? true : v === '1';
+  } catch {
+    return true;
+  }
+}
+
+export function saveBgmEnabled(v: boolean): void {
+  try {
+    localStorage.setItem(BGM_ENABLED_KEY, v ? '1' : '0');
+  } catch {
+    // ignore
+  }
+}
+
+export function loadBgmVolume(): number {
+  try {
+    const raw = localStorage.getItem(BGM_VOLUME_KEY);
+    if (raw == null) return 60;
+    const n = Number(raw);
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 60;
+  } catch {
+    return 60;
+  }
+}
+
+export function saveBgmVolume(v: number): void {
+  try {
+    localStorage.setItem(BGM_VOLUME_KEY, String(Math.max(0, Math.min(100, v))));
+  } catch {
+    // ignore
   }
 }

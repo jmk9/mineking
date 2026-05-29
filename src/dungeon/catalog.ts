@@ -25,28 +25,35 @@ const HP_PROFILE: Record<HpRegenTier, { startHp: number; minePenalty: number; hp
   hard:   { startHp: 100, minePenalty: 25, hpRegenPerBoard: 0 },
 };
 
-/** Names + subtitles per (size, hpRegen) combo. */
+/**
+ * Names + image + subtitles per (size, hpRegen) combo.
+ *
+ * Theming convention: friendly scenes for 초급 boards (small) -> mysterious
+ * scenes for 중급 boards (medium) -> dangerous scenes for 고급 boards (large).
+ * The `image` field is the basename of the PNG in public/dungeons/.
+ */
 interface Entry {
   size: SizeTier;
   hp: HpRegenTier;
   id: string;
+  image: string;
   name: string;
   subtitle: string;
 }
 
 const ENTRIES: Entry[] = [
-  // size-small (초급)
-  { size: 'small',  hp: 'easy',   id: 'easy-small',     name: '햇살 들판',     subtitle: '초급 보드 · 풀 회복 · 입문' },
-  { size: 'small',  hp: 'medium', id: 'medium-small',   name: '안개 숲',       subtitle: '초급 보드 · 부분 회복' },
-  { size: 'small',  hp: 'hard',   id: 'hard-small',     name: '용암 동굴',     subtitle: '초급 보드 · 회복 없음' },
-  // size-medium (중급)
-  { size: 'medium', hp: 'easy',   id: 'easy-medium',    name: '봄꽃 정원',     subtitle: '중급 보드 · 풀 회복' },
-  { size: 'medium', hp: 'medium', id: 'medium-medium',  name: '잊혀진 유적',   subtitle: '중급 보드 · 부분 회복' },
-  { size: 'medium', hp: 'hard',   id: 'hard-medium',    name: '빙하 협곡',     subtitle: '중급 보드 · 회복 없음' },
-  // size-large (고급)
-  { size: 'large',  hp: 'easy',   id: 'easy-large',     name: '황금 해변',     subtitle: '고급 보드 · 풀 회복' },
-  { size: 'large',  hp: 'medium', id: 'medium-large',   name: '노을 늪',       subtitle: '고급 보드 · 부분 회복' },
-  { size: 'large',  hp: 'hard',   id: 'hard-large',     name: '별 너머 심연',  subtitle: '고급 보드 · 회복 없음 · 최종' },
+  // size-small (초급 보드) — friendly scenes
+  { size: 'small',  hp: 'easy',   id: 'small-easy',    image: 'meadow', name: '햇살 들판',    subtitle: '초급 보드 · 풀 회복 · 입문' },
+  { size: 'small',  hp: 'medium', id: 'small-medium',  image: 'garden', name: '봄꽃 정원',    subtitle: '초급 보드 · 부분 회복' },
+  { size: 'small',  hp: 'hard',   id: 'small-hard',    image: 'beach',  name: '황금 해변',    subtitle: '초급 보드 · 회복 없음' },
+  // size-medium (중급 보드) — mysterious scenes
+  { size: 'medium', hp: 'easy',   id: 'medium-easy',   image: 'forest', name: '안개 숲',      subtitle: '중급 보드 · 풀 회복' },
+  { size: 'medium', hp: 'medium', id: 'medium-medium', image: 'ruins',  name: '잊혀진 유적',  subtitle: '중급 보드 · 부분 회복' },
+  { size: 'medium', hp: 'hard',   id: 'medium-hard',   image: 'marsh',  name: '노을 늪',      subtitle: '중급 보드 · 회복 없음' },
+  // size-large (고급 보드) — dangerous scenes
+  { size: 'large',  hp: 'easy',   id: 'large-easy',    image: 'cavern', name: '용암 동굴',    subtitle: '고급 보드 · 풀 회복' },
+  { size: 'large',  hp: 'medium', id: 'large-medium',  image: 'glacier',name: '빙하 협곡',    subtitle: '고급 보드 · 부분 회복' },
+  { size: 'large',  hp: 'hard',   id: 'large-hard',    image: 'cosmos', name: '별 너머 심연', subtitle: '고급 보드 · 회복 없음 · 최종' },
 ];
 
 /** Reward multipliers per difficulty rank 1..9 (matches the order above). */
@@ -62,7 +69,7 @@ export const DUNGEONS: DungeonDef[] = ENTRIES.map((e, i) => {
     hpRegenTier: e.hp,
     name: e.name,
     subtitle: e.subtitle,
-    imageUrl: `/dungeons/${e.id}.png`,
+    imageUrl: `/dungeons/${e.image}.png`,
     ...sp,
     ...hp,
     rewardMult: REWARD_MULTS[i],

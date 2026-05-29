@@ -38,12 +38,16 @@ export function Dungeons({ activeRun, onStart, onResume, onClose }: Props) {
                 if (activeRun && !confirm('진행 중인 런이 있어요. 포기하고 새로 시작할까요?')) return;
                 onStart(d.id);
               }}
-              style={{ backgroundImage: `url(${d.imageUrl})` }}
             >
-              <div className="dungeon-card-shade">
-                <div className="dungeon-card-rank">Lv {d.rank}</div>
-                <div className="dungeon-card-name">{d.name}</div>
-                <div className="dungeon-card-sub">{d.subtitle}</div>
+              <div
+                className="dungeon-card-image"
+                style={{ backgroundImage: `url(${d.imageUrl})` }}
+              >
+                <span className="dungeon-card-rank">Lv {d.rank}</span>
+              </div>
+              <div className="dungeon-card-text">
+                <span className="dungeon-card-name">{d.name}</span>
+                <span className="dungeon-card-sub">{d.subtitle}</span>
               </div>
             </button>
           ))}

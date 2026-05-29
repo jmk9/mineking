@@ -5,6 +5,10 @@ import type { Platform } from './usePWAInstall';
 interface Props {
   loupeEnabled: boolean;
   onLoupeToggle: (enabled: boolean) => void;
+  bgmEnabled: boolean;
+  onBgmToggle: (enabled: boolean) => void;
+  bgmVolume: number;
+  onBgmVolumeChange: (volume: number) => void;
   account?: { name: string; onLogout: () => void };
   canInstall?: boolean;
   onInstall?: () => void;
@@ -16,6 +20,10 @@ interface Props {
 export function Settings({
   loupeEnabled,
   onLoupeToggle,
+  bgmEnabled,
+  onBgmToggle,
+  bgmVolume,
+  onBgmVolumeChange,
   account,
   canInstall,
   onInstall,
@@ -55,6 +63,32 @@ export function Settings({
           checked={loupeEnabled}
           onChange={onLoupeToggle}
         />
+
+        <ToggleRow
+          label="배경 음악(BGM)"
+          desc="모드별 음악을 자동으로 틀어줍니다"
+          checked={bgmEnabled}
+          onChange={onBgmToggle}
+        />
+
+        {bgmEnabled && (
+          <div className="setting-row">
+            <div className="setting-text">
+              <span className="setting-label">볼륨</span>
+              <span className="setting-desc">{bgmVolume}%</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={bgmVolume}
+              onChange={(e) => onBgmVolumeChange(Number(e.currentTarget.value))}
+              className="volume-slider"
+              aria-label="BGM 볼륨"
+            />
+          </div>
+        )}
 
         {!standalone && (
           <button className="install-btn" onClick={handleInstall}>

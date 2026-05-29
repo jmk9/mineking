@@ -6,7 +6,16 @@ import { CUSTOM_THEME_COST, PRESETS, defaultTheme } from '../render/presets';
 import { draftFromTheme, type ThemeDraft } from '../render/customTheme';
 import type { Theme } from '../render/theme';
 import { loadCoins, saveCoins } from '../storage/wallet';
-import { loadThemeId, saveThemeId, loadLoupeEnabled, saveLoupeEnabled } from '../storage/prefs';
+import {
+  loadThemeId,
+  saveThemeId,
+  loadLoupeEnabled,
+  saveLoupeEnabled,
+  loadBgmEnabled,
+  saveBgmEnabled,
+  loadBgmVolume,
+  saveBgmVolume,
+} from '../storage/prefs';
 import { loadCustomThemes, saveCustomThemes } from '../storage/customThemes';
 import { loadUnlocks, saveUnlocks } from '../storage/unlocks';
 import { loadProgress, saveProgress } from '../storage/progress';
@@ -28,6 +37,15 @@ import { startRun } from '../dungeon/run';
 import type { AdventureRun } from '../dungeon/types';
 import { clearDungeonRun, loadDungeonRun, saveDungeonRun } from '../storage/dungeonRun';
 import { usePWAInstall } from './usePWAInstall';
+import { useBGM } from './useBGM';
+
+/** Background music tracks served from public/audio/. Missing files are silent. */
+const BGM_TRACKS = {
+  main: '/audio/main.mp3',
+  small: '/audio/tier1.mp3',
+  medium: '/audio/tier2.mp3',
+  large: '/audio/tier3.mp3',
+} as const;
 import { useElementWidth } from './useElementWidth';
 import { useElapsedSeconds } from './useTimer';
 
@@ -123,6 +141,8 @@ export function Game({ account }: GameProps = {}) {
     return () => document.removeEventListener('pointerdown', onDown);
   }, [zoomOpen]);
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
+  const [bgmEnabled, setBgmEnabled] = useState(() => loadBgmEnabled());
+  const [bgmVolume, setBgmVolume] = useState(() => loadBgmVolume());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
   const [dungeonsOpen, setDungeonsOpen] = useState(false);
@@ -143,6 +163,28 @@ export function Game({ account }: GameProps = {}) {
     setLoupeEnabled(enabled);
     saveLoupeEnabled(enabled);
   };
+
+  const onBgmToggle = (enabled: boolean) => {
+    setBgmEnabled(enabled);
+    saveBgmEnabled(enabled);
+  };
+
+  const onBgmVolumeChange = (volume: number) => {
+    setBgmVolume(volume);
+    saveBgmVolume(volume);
+  };
+
+  // Pick the right BGM track for the current view: a dungeon run uses its
+  // size-tier track; everything else (quickplay, menus, overlays) uses main.
+  const currentBgmSrc = (() => {
+    if (adventureRun && dungeonViewOpen && !dungeonResult) {
+      const dungeon = getDungeon(adventureRun.dungeonId);
+      if (dungeon) return BGM_TRACKS[dungeon.sizeTier];
+    }
+    return BGM_TRACKS.main;
+  })();
+
+  useBGM(currentBgmSrc, { enabled: bgmEnabled, volume: bgmVolume });
 
   const startDungeon = (id: string) => {
     const d = getDungeon(id);
@@ -496,6 +538,10 @@ export function Game({ account }: GameProps = {}) {
         <Settings
           loupeEnabled={loupeEnabled}
           onLoupeToggle={onLoupeToggle}
+          bgmEnabled={bgmEnabled}
+          onBgmToggle={onBgmToggle}
+          bgmVolume={bgmVolume}
+          onBgmVolumeChange={onBgmVolumeChange}
           account={account}
           canInstall={canInstall}
           onInstall={install}

@@ -33,15 +33,15 @@ describe('dungeon catalog', () => {
     }
   });
 
-  it('uses the public dungeon image path matching the id', () => {
+  it('serves each dungeon image from /dungeons/*.png', () => {
     for (const d of DUNGEONS) {
-      expect(d.imageUrl).toBe(`/dungeons/${d.id}.png`);
+      expect(d.imageUrl).toMatch(/^\/dungeons\/[a-z]+\.png$/);
     }
   });
 });
 
 describe('rewardForBoard', () => {
-  const dungeon = getDungeon('easy-small')!;
+  const dungeon = getDungeon('small-easy')!;
 
   it('pays bigger reward on the boss board than on a normal board', () => {
     const normal = rewardForBoard(dungeon, 0, [], 1);
@@ -57,14 +57,14 @@ describe('rewardForBoard', () => {
   });
 
   it('scales with dungeon multiplier', () => {
-    const easy = rewardForBoard(getDungeon('easy-small')!, 0, [], 1).coins;
-    const hardest = rewardForBoard(getDungeon('hard-large')!, 0, [], 1).coins;
+    const easy = rewardForBoard(getDungeon('small-easy')!, 0, [], 1).coins;
+    const hardest = rewardForBoard(getDungeon('large-hard')!, 0, [], 1).coins;
     expect(hardest).toBeGreaterThan(easy * 3);
   });
 });
 
 describe('run state machine', () => {
-  const dungeon = getDungeon('easy-small')!;
+  const dungeon = getDungeon('small-easy')!;
 
   it('starts at board 0 with full HP', () => {
     const run = startRun(dungeon, 1000);
