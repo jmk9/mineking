@@ -1,7 +1,7 @@
 interface Props {
   /** Logged-in account, if any. The login chip appears when present. */
   account?: { name: string };
-  /** Current display name (falls back to account name or "지뢰러"). */
+  /** Current display name (falls back to account name or "Guest"). */
   displayName?: string;
   /** Player level for the profile chip. */
   level: number;
@@ -34,7 +34,7 @@ export function Home({
   onOpenDungeons,
   onOpenSettings,
 }: Props) {
-  const name = displayName?.trim() || account?.name || '지뢰러';
+  const name = displayName?.trim() || account?.name || 'Guest';
   return (
     <div className="home">
       <header className="home-header">

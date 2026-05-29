@@ -106,8 +106,13 @@ export function AuthGate() {
   };
 
   const logout = async () => {
+    // Push one last time so nothing local is lost, then wipe the device save
+    // so the next visitor (login screen / 게스트 모드) starts from a clean
+    // slate instead of inheriting the previous account's coins, level, and
+    // themes. The next successful login will repopulate from the cloud.
     if (supabase && session) await pushCloud(session.user.id, collectSave());
     await supabase?.auth.signOut();
+    clearLocalSave();
     setSession(null);
     setOffline(false);
     setPhase('login');
