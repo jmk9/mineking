@@ -15,6 +15,8 @@ import {
   saveBgmEnabled,
   loadBgmVolume,
   saveBgmVolume,
+  loadSfxEnabled,
+  saveSfxEnabled,
 } from '../storage/prefs';
 import { loadCustomThemes, saveCustomThemes } from '../storage/customThemes';
 import { loadUnlocks, saveUnlocks } from '../storage/unlocks';
@@ -39,6 +41,7 @@ import type { AdventureRun } from '../dungeon/types';
 import { clearDungeonRun, loadDungeonRun, saveDungeonRun } from '../storage/dungeonRun';
 import { usePWAInstall } from './usePWAInstall';
 import { useBGM } from './useBGM';
+import { sfxInit, sfxPlay, sfxSetEnabled, sfxSetVolume } from '../audio/sfx';
 
 /** Background music tracks served from public/audio/. Missing files are silent. */
 const BGM_TRACKS = {
@@ -145,6 +148,7 @@ export function Game({ account }: GameProps = {}) {
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [bgmEnabled, setBgmEnabled] = useState(() => loadBgmEnabled());
   const [bgmVolume, setBgmVolume] = useState(() => loadBgmVolume());
+  const [sfxEnabled, setSfxEnabled] = useState(() => loadSfxEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
   const [dungeonsOpen, setDungeonsOpen] = useState(false);
@@ -179,6 +183,30 @@ export function Game({ account }: GameProps = {}) {
     setBgmVolume(volume);
     saveBgmVolume(volume);
   };
+
+  const onSfxToggle = (enabled: boolean) => {
+    setSfxEnabled(enabled);
+    saveSfxEnabled(enabled);
+  };
+
+  // Mirror SFX settings into the singleton driver and unlock the audio
+  // context on the first user gesture (iOS requirement). Volume tracks BGM
+  // so the user only deals with one slider.
+  useEffect(() => {
+    sfxSetEnabled(sfxEnabled);
+  }, [sfxEnabled]);
+  useEffect(() => {
+    sfxSetVolume(bgmVolume);
+  }, [bgmVolume]);
+  useEffect(() => {
+    const unlock = () => sfxInit();
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, []);
 
   // Pick the right BGM track for the current view: a dungeon run uses its
   // size-tier track, 수련장 has its own track, and the lobby falls back to
@@ -286,25 +314,39 @@ export function Game({ account }: GameProps = {}) {
 
   const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' = 'auto') => {
     const cell = state.grid[r][c];
+    let action: 'reveal' | 'flag' | 'unflag' | 'chord';
     let next: GameState;
     if (cell.state === 'revealed') {
       next = chord(state, r, c); // chording works in both modes
+      action = 'chord';
     } else if (state.status === 'ready') {
       next = reveal(state, r, c); // first click always opens, even in flag mode
+      action = 'reveal';
     } else if (kind === 'reveal') {
       next = reveal(state, r, c); // mouse left button
+      action = 'reveal';
     } else if (kind === 'flag') {
       next = toggleFlag(state, r, c); // mouse right button
+      action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else if (mode === 'flag') {
       next = toggleFlag(state, r, c);
+      action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else {
       next = reveal(state, r, c);
+      action = 'reveal';
     }
     if (next === state) return;
     setState(next);
+    // Click feedback. End-of-game cues (boom/win/lose/coin) fire below.
+    sfxPlay(action);
 
     // On any game end, run the progression engine (coins + xp + achievements + quests).
     if (next.status === 'won' || next.status === 'lost') {
+      // Outcome cues: boom is instant, the win/lose chime trails behind so
+      // it doesn't drown the click feedback.
+      sfxPlay(next.status === 'won' ? 'win' : 'boom');
+      if (next.status === 'lost') setTimeout(() => sfxPlay('lose'), 350);
+
       const score = computeScore(next);
       const result: GameResult = {
         won: next.status === 'won',
@@ -322,6 +364,7 @@ export function Game({ account }: GameProps = {}) {
       saveCoins(balance);
       setReward(score);
       setDeltas(d);
+      if (d.coins > 0) setTimeout(() => sfxPlay('coin'), 500);
     }
   };
 
@@ -577,6 +620,8 @@ export function Game({ account }: GameProps = {}) {
           onBgmToggle={onBgmToggle}
           bgmVolume={bgmVolume}
           onBgmVolumeChange={onBgmVolumeChange}
+          sfxEnabled={sfxEnabled}
+          onSfxToggle={onSfxToggle}
           account={account}
           canInstall={canInstall}
           onInstall={install}

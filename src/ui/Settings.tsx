@@ -9,6 +9,8 @@ interface Props {
   onBgmToggle: (enabled: boolean) => void;
   bgmVolume: number;
   onBgmVolumeChange: (volume: number) => void;
+  sfxEnabled: boolean;
+  onSfxToggle: (enabled: boolean) => void;
   account?: { name: string; onLogout: () => void };
   canInstall?: boolean;
   onInstall?: () => void;
@@ -24,6 +26,8 @@ export function Settings({
   onBgmToggle,
   bgmVolume,
   onBgmVolumeChange,
+  sfxEnabled,
+  onSfxToggle,
   account,
   canInstall,
   onInstall,
@@ -69,6 +73,13 @@ export function Settings({
           desc="모드별 음악을 자동으로 틀어줍니다"
           checked={bgmEnabled}
           onChange={onBgmToggle}
+        />
+
+        <ToggleRow
+          label="효과음"
+          desc="셀 열기·깃발·폭발 같은 짧은 소리"
+          checked={sfxEnabled}
+          onChange={onSfxToggle}
         />
 
         {bgmEnabled && (

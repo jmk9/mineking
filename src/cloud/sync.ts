@@ -10,6 +10,10 @@ const SAVE_KEYS = [
   'ms_dungeon_run_v1',
 ];
 
+// Note: BGM/SFX/loupe prefs are device-local on purpose — they reflect this
+// device's playback environment (speakers, headphones, kid asleep), not the
+// account, so they're intentionally excluded from cloud sync.
+
 export type SaveBlob = Record<string, string>;
 
 /** Read the current save from localStorage into a plain object. */

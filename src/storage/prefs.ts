@@ -2,6 +2,7 @@ const THEME_KEY = 'ms_theme_v1';
 const LOUPE_ENABLED_KEY = 'ms_loupe_enabled_v1';
 const BGM_ENABLED_KEY = 'ms_bgm_enabled_v1';
 const BGM_VOLUME_KEY = 'ms_bgm_volume_v1';
+const SFX_ENABLED_KEY = 'ms_sfx_enabled_v1';
 
 export function loadThemeId(): string | null {
   try {
@@ -67,6 +68,23 @@ export function loadBgmVolume(): number {
 export function saveBgmVolume(v: number): void {
   try {
     localStorage.setItem(BGM_VOLUME_KEY, String(Math.max(0, Math.min(100, v))));
+  } catch {
+    // ignore
+  }
+}
+
+export function loadSfxEnabled(): boolean {
+  try {
+    const v = localStorage.getItem(SFX_ENABLED_KEY);
+    return v == null ? true : v === '1';
+  } catch {
+    return true;
+  }
+}
+
+export function saveSfxEnabled(v: boolean): void {
+  try {
+    localStorage.setItem(SFX_ENABLED_KEY, v ? '1' : '0');
   } catch {
     // ignore
   }

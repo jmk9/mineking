@@ -7,6 +7,7 @@ import type { AdventureRun, RunOutcome } from '../dungeon/types';
 import type { Theme } from '../render/theme';
 import { BoardCanvas } from './BoardCanvas';
 import { useElementWidth } from './useElementWidth';
+import { sfxPlay } from '../audio/sfx';
 
 interface Props {
   run: AdventureRun;
@@ -77,28 +78,41 @@ export function DungeonRun({
 
   const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' = 'auto') => {
     const cell = board.grid[r][c];
+    let action: 'reveal' | 'flag' | 'unflag' | 'chord';
     let next: GameState;
     if (cell.state === 'revealed') {
       next = chord(board, r, c);
+      action = 'chord';
     } else if (board.status === 'ready') {
       next = reveal(board, r, c);
+      action = 'reveal';
     } else if (kind === 'reveal') {
       next = reveal(board, r, c);
+      action = 'reveal';
     } else if (kind === 'flag') {
       next = toggleFlag(board, r, c);
+      action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else if (mode === 'flag') {
       next = toggleFlag(board, r, c);
+      action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else {
       next = reveal(board, r, c);
+      action = 'reveal';
     }
     if (next === board) return;
     setBoard(next);
+    sfxPlay(action);
 
     if (next.status === 'lost') {
       // Mine hit -- drain HP. Same board retried unless dead.
       const r = applyMineHit(run);
       setRun(r.run);
       onRunChange(r.run);
+      sfxPlay('boom');
+      // Distinguish "you're dead, run over" from "ouch, retry the board" by
+      // the trailing cue: a low lose chime if the run ended, an hp-down
+      // ping if there's still HP to keep going.
+      setTimeout(() => sfxPlay(r.dead ? 'lose' : 'hp-down'), 350);
       if (r.dead) {
         onRunEnded(r.run, 'lost');
       } else {
@@ -109,6 +123,8 @@ export function DungeonRun({
       const result = applyBoardCleared(run, perksEquipped, playerLevel);
       setRun(result.run);
       onRunChange(result.run);
+      sfxPlay('win');
+      setTimeout(() => sfxPlay('coin'), 350);
       if (result.outcome === 'won') {
         onRunEnded(result.run, 'won');
       }

@@ -1,0 +1,20 @@
+Sound effects in this folder are derived from Kenney's CC0 audio packs:
+
+  - Interface Sounds — https://kenney.nl/assets/interface-sounds
+  - Impact Sounds    — https://kenney.nl/assets/impact-sounds
+  - Digital Audio    — https://kenney.nl/assets/digital-audio
+  - Casino Audio     — https://kenney.nl/assets/casino-audio
+
+Clip mapping (source → exported file):
+  click_001.ogg            → reveal.mp3
+  select_002.ogg           → flag.mp3
+  back_001.ogg             → unflag.mp3
+  confirmation_002.ogg     → chord.mp3
+  impactBell_heavy_004.ogg → boom.mp3
+  powerUp1.ogg             → win.mp3
+  lowDown.ogg              → lose.mp3
+  chips-collide-1.ogg      → coin.mp3
+  error_002.ogg            → hp-down.mp3
+
+License: CC0 1.0 (Public Domain Dedication). No attribution required —
+this notice is included as a courtesy.
