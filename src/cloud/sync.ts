@@ -7,6 +7,7 @@ const SAVE_KEYS = [
   'ms_custom_themes_v1',
   'ms_unlocked_themes_v1',
   'ms_progress_v1',
+  'ms_dungeon_run_v1',
 ];
 
 export type SaveBlob = Record<string, string>;

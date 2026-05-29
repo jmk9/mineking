@@ -1428,6 +1428,224 @@ button:active {
   background: var(--accent-text);
 }
 
+/* ---------- Dungeons (사냥터) ---------- */
+.dungeons-card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 18px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  animation: pop-in 0.22s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.dungeon-resume {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 65%, #000));
+  color: var(--accent-text);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dungeon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.dungeon-card {
+  aspect-ratio: 1;
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--bg);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.dungeon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.dungeon-card-shade {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.78) 100%);
+  color: #fff;
+  text-align: left;
+}
+
+.dungeon-card-rank {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fde68a;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.dungeon-card-name {
+  font-weight: 800;
+  font-size: 14px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.dungeon-card-sub {
+  font-size: 11px;
+  color: #e2e8f0;
+  margin-top: 2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 480px) {
+  .dungeon-grid { grid-template-columns: repeat(2, 1fr); }
+  .dungeon-card-name { font-size: 13px; }
+}
+
+/* ---------- In-run UI ---------- */
+.dungeon-run {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dungeon-run-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.dungeon-quit {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.dungeon-run-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dungeon-run-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.dungeon-run-stage {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dungeon-run-coin {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #fde68a;
+  font-size: 13px;
+}
+
+.dungeon-forfeit {
+  background: color-mix(in srgb, var(--bg) 40%, var(--panel));
+  border: 1px solid var(--panel-border);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dungeon-forfeit:hover {
+  color: #fca5a5;
+  border-color: #ef4444;
+}
+
+.hp-bar {
+  position: relative;
+  height: 22px;
+  background: color-mix(in srgb, var(--bg) 60%, var(--panel));
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.hp-bar-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.dungeon-result-meta {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* The 🗡 sword button gets a small "active run" dot. */
+.theme-btn.has-active {
+  position: relative;
+}
+
+.theme-btn .dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--panel);
+}
+
 /* ---------- Mobile full-bleed board (must come AFTER base rules) ---------- */
 @media (max-width: 480px) {
   .board-card {

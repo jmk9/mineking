@@ -20,6 +20,13 @@ import { ThemeEditor } from './ThemeEditor';
 import { ProfilePage } from './ProfilePage';
 import { Settings } from './Settings';
 import { NameEditor } from './NameEditor';
+import { Dungeons } from './Dungeons';
+import { DungeonRun } from './DungeonRun';
+import { DungeonResult } from './DungeonResult';
+import { getDungeon } from '../dungeon/catalog';
+import { startRun } from '../dungeon/run';
+import type { AdventureRun } from '../dungeon/types';
+import { clearDungeonRun, loadDungeonRun, saveDungeonRun } from '../storage/dungeonRun';
 import { usePWAInstall } from './usePWAInstall';
 import { useElementWidth } from './useElementWidth';
 import { useElapsedSeconds } from './useTimer';
@@ -118,6 +125,12 @@ export function Game({ account }: GameProps = {}) {
   const [loupeEnabled, setLoupeEnabled] = useState(() => loadLoupeEnabled());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [nameEditorOpen, setNameEditorOpen] = useState(false);
+  const [dungeonsOpen, setDungeonsOpen] = useState(false);
+  const [adventureRun, setAdventureRun] = useState<AdventureRun | null>(() => loadDungeonRun());
+  const [dungeonViewOpen, setDungeonViewOpen] = useState(false);
+  const [dungeonResult, setDungeonResult] = useState<
+    { run: AdventureRun; outcome: 'won' | 'lost' } | null
+  >(null);
   const { canInstall, install, standalone, platform } = usePWAInstall();
   const baseCell = useMemo(() => {
     if (availWidth <= 0) return MIN_CELL;
@@ -129,6 +142,45 @@ export function Game({ account }: GameProps = {}) {
   const onLoupeToggle = (enabled: boolean) => {
     setLoupeEnabled(enabled);
     saveLoupeEnabled(enabled);
+  };
+
+  const startDungeon = (id: string) => {
+    const d = getDungeon(id);
+    if (!d) return;
+    const fresh = startRun(d);
+    setAdventureRun(fresh);
+    saveDungeonRun(fresh);
+    setDungeonsOpen(false);
+    setDungeonViewOpen(true);
+    setDungeonResult(null);
+  };
+
+  const resumeDungeon = () => {
+    setDungeonViewOpen(true);
+    setDungeonsOpen(false);
+  };
+
+  const updateRun = (next: AdventureRun) => {
+    setAdventureRun(next);
+    saveDungeonRun(next);
+  };
+
+  const endRun = (run: AdventureRun, outcome: 'won' | 'lost') => {
+    // Pay out accrued coins/XP to the wallet + progress.
+    if (run.pendingCoins > 0) {
+      const balance = coins + run.pendingCoins;
+      setCoins(balance);
+      saveCoins(balance);
+    }
+    if (run.pendingXp > 0) {
+      const nextProgress: PlayerProgress = { ...progress, xp: progress.xp + run.pendingXp };
+      setProgress(nextProgress);
+      saveProgress(nextProgress);
+    }
+    setDungeonResult({ run, outcome });
+    setAdventureRun(null);
+    clearDungeonRun();
+    setDungeonViewOpen(false);
   };
 
   const renameProfile = (name: string) => {
@@ -241,6 +293,13 @@ export function Game({ account }: GameProps = {}) {
           <button className="profile-btn" onClick={() => setProfileOpen(true)}>
             👤 Lv {levelInfo(progress.xp).level}
           </button>
+          <button
+            className={`theme-btn ${adventureRun ? 'has-active' : ''}`}
+            onClick={() => setDungeonsOpen(true)}
+            aria-label="사냥터"
+          >
+            🗡{adventureRun && <span className="dot" />}
+          </button>
           <button className="theme-btn" onClick={() => setPickerOpen(true)} aria-label="상점">
             🛒
           </button>
@@ -250,6 +309,29 @@ export function Game({ account }: GameProps = {}) {
         </div>
       </header>
 
+      {adventureRun && dungeonViewOpen && !dungeonResult ? (
+        <DungeonRun
+          run={adventureRun}
+          perksEquipped={progress.perksEquipped}
+          playerLevel={levelInfo(progress.xp).level}
+          theme={theme}
+          loupeEnabled={loupeEnabled}
+          zoom={zoom}
+          onZoomChange={setZoom}
+          onRunChange={updateRun}
+          onRunEnded={endRun}
+          onQuit={() => {
+            // Back button: just close the view. The run is preserved and can be
+            // resumed via the dungeon menu's "이어하기".
+            setDungeonViewOpen(false);
+          }}
+          onForfeit={() => {
+            // Explicit "그만하기": end the run, pay out partial reward as a loss.
+            endRun(adventureRun, 'lost');
+          }}
+        />
+      ) : (
+      <>
       <div className="segmented difficulty">
         {(Object.keys(DIFFICULTIES) as DifficultyName[]).map((d) => (
           <button
@@ -330,6 +412,8 @@ export function Game({ account }: GameProps = {}) {
         깃발 모드여도 <b>첫 클릭은 항상 열려요</b>.<br />
         열린 숫자를 누르면 주변을 한 번에 점검(코드)해요. PC는 좌클릭=열기, 우클릭=깃발.
       </p>
+      </>
+      )}
 
       {reward && deltas && (state.status === 'won' || state.status === 'lost') && (
         <ResultOverlay
@@ -349,6 +433,27 @@ export function Game({ account }: GameProps = {}) {
           onTogglePerk={onTogglePerk}
           onOpenRename={account ? () => setNameEditorOpen(true) : undefined}
           onClose={() => setProfileOpen(false)}
+        />
+      )}
+
+      {dungeonsOpen && (
+        <Dungeons
+          activeRun={adventureRun}
+          onStart={startDungeon}
+          onResume={resumeDungeon}
+          onClose={() => setDungeonsOpen(false)}
+        />
+      )}
+
+      {dungeonResult && (
+        <DungeonResult
+          run={dungeonResult.run}
+          outcome={dungeonResult.outcome}
+          onRetry={(id) => {
+            setDungeonResult(null);
+            startDungeon(id);
+          }}
+          onClose={() => setDungeonResult(null)}
         />
       )}
 
