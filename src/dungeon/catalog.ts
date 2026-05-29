@@ -43,17 +43,17 @@ interface Entry {
 
 const ENTRIES: Entry[] = [
   // size-small (초급 보드) — friendly scenes
-  { size: 'small',  hp: 'easy',   id: 'small-easy',    image: 'meadow', name: '햇살 들판',    subtitle: '초급 보드 · 풀 회복 · 입문' },
-  { size: 'small',  hp: 'medium', id: 'small-medium',  image: 'garden', name: '봄꽃 정원',    subtitle: '초급 보드 · 부분 회복' },
-  { size: 'small',  hp: 'hard',   id: 'small-hard',    image: 'beach',  name: '황금 해변',    subtitle: '초급 보드 · 회복 없음' },
+  { size: 'small',  hp: 'easy',   id: 'small-easy',    image: 'meadow', name: '햇살 들판',    subtitle: '초급 9×9 · 보드당 +30 회복 · 입문용' },
+  { size: 'small',  hp: 'medium', id: 'small-medium',  image: 'garden', name: '봄꽃 정원',    subtitle: '초급 9×9 · 보드당 +15 회복' },
+  { size: 'small',  hp: 'hard',   id: 'small-hard',    image: 'beach',  name: '황금 해변',    subtitle: '초급 9×9 · 회복 없음 — 무피 도전' },
   // size-medium (중급 보드) — mysterious scenes
-  { size: 'medium', hp: 'easy',   id: 'medium-easy',   image: 'forest', name: '안개 숲',      subtitle: '중급 보드 · 풀 회복' },
-  { size: 'medium', hp: 'medium', id: 'medium-medium', image: 'ruins',  name: '잊혀진 유적',  subtitle: '중급 보드 · 부분 회복' },
-  { size: 'medium', hp: 'hard',   id: 'medium-hard',   image: 'marsh',  name: '노을 늪',      subtitle: '중급 보드 · 회복 없음' },
+  { size: 'medium', hp: 'easy',   id: 'medium-easy',   image: 'forest', name: '안개 숲',      subtitle: '중급 16×16 · 보드당 +30 회복' },
+  { size: 'medium', hp: 'medium', id: 'medium-medium', image: 'ruins',  name: '잊혀진 유적',  subtitle: '중급 16×16 · 보드당 +15 회복' },
+  { size: 'medium', hp: 'hard',   id: 'medium-hard',   image: 'marsh',  name: '노을 늪',      subtitle: '중급 16×16 · 회복 없음' },
   // size-large (고급 보드) — dangerous scenes
-  { size: 'large',  hp: 'easy',   id: 'large-easy',    image: 'cavern', name: '용암 동굴',    subtitle: '고급 보드 · 풀 회복' },
-  { size: 'large',  hp: 'medium', id: 'large-medium',  image: 'glacier',name: '빙하 협곡',    subtitle: '고급 보드 · 부분 회복' },
-  { size: 'large',  hp: 'hard',   id: 'large-hard',    image: 'cosmos', name: '별 너머 심연', subtitle: '고급 보드 · 회복 없음 · 최종' },
+  { size: 'large',  hp: 'easy',   id: 'large-easy',    image: 'cavern', name: '용암 동굴',    subtitle: '고급 16×30 · 보드당 +30 회복' },
+  { size: 'large',  hp: 'medium', id: 'large-medium',  image: 'glacier',name: '빙하 협곡',    subtitle: '고급 16×30 · 보드당 +15 회복' },
+  { size: 'large',  hp: 'hard',   id: 'large-hard',    image: 'cosmos', name: '별 너머 심연', subtitle: '고급 16×30 · 회복 없음 · 최종' },
 ];
 
 /** Reward multipliers per difficulty rank 1..9 (matches the order above). */

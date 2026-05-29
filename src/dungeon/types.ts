@@ -1,5 +1,5 @@
 /**
- * Adventure mode (사냥터) types.
+ * Adventure mode (던전) types.
  *
  * A dungeon is a short linear run of 5 minesweeper boards that share an
  * HP pool. Boards 1-4 are normal, board 5 is the boss (larger / more

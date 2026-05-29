@@ -32,6 +32,7 @@ import { NameEditor } from './NameEditor';
 import { Dungeons } from './Dungeons';
 import { DungeonRun } from './DungeonRun';
 import { DungeonResult } from './DungeonResult';
+import { Home } from './Home';
 import { getDungeon } from '../dungeon/catalog';
 import { startRun } from '../dungeon/run';
 import type { AdventureRun } from '../dungeon/types';
@@ -148,6 +149,10 @@ export function Game({ account }: GameProps = {}) {
   const [dungeonsOpen, setDungeonsOpen] = useState(false);
   const [adventureRun, setAdventureRun] = useState<AdventureRun | null>(() => loadDungeonRun());
   const [dungeonViewOpen, setDungeonViewOpen] = useState(false);
+  /** Top-level view router. The app boots at 'home'; entering 수련장 sets
+   * 'training'. Modals (dungeons, smithy, profile, settings) layer on top of
+   * whichever view is active. */
+  const [view, setView] = useState<'home' | 'training'>('home');
   const [dungeonResult, setDungeonResult] = useState<
     { run: AdventureRun; outcome: 'won' | 'lost' } | null
   >(null);
@@ -324,10 +329,35 @@ export function Game({ account }: GameProps = {}) {
     saveProgress(next);
   };
 
+  // A dungeon run takes the screen over both home and training while active.
+  const inDungeonRun = !!(adventureRun && dungeonViewOpen && !dungeonResult);
+
   return (
     <div className="game">
+      {view === 'home' && !inDungeonRun ? (
+        <Home
+          account={account}
+          displayName={progress.displayName}
+          level={levelInfo(progress.xp).level}
+          coins={coins}
+          hasActiveRun={!!adventureRun}
+          onOpenProfile={() => setProfileOpen(true)}
+          onOpenSmithy={() => setPickerOpen(true)}
+          onOpenTraining={() => setView('training')}
+          onOpenDungeons={() => setDungeonsOpen(true)}
+          onOpenSettings={() => setSettingsOpen(true)}
+        />
+      ) : (
+        <>
       <header className="appbar">
         <div className="brand">
+          <button
+            className="home-back-btn"
+            onClick={() => setView('home')}
+            aria-label="홈으로"
+          >
+            🏠
+          </button>
           <span className="brand-mark">🚩</span>
           <span className="brand-name">지뢰왕</span>
         </div>
@@ -338,12 +368,12 @@ export function Game({ account }: GameProps = {}) {
           <button
             className={`theme-btn ${adventureRun ? 'has-active' : ''}`}
             onClick={() => setDungeonsOpen(true)}
-            aria-label="사냥터"
+            aria-label="던전"
           >
             🗡{adventureRun && <span className="dot" />}
           </button>
-          <button className="theme-btn" onClick={() => setPickerOpen(true)} aria-label="상점">
-            🛒
+          <button className="theme-btn" onClick={() => setPickerOpen(true)} aria-label="대장간">
+            🔨
           </button>
           <button className="theme-btn" onClick={() => setSettingsOpen(true)} aria-label="설정">
             ⚙️
@@ -351,7 +381,7 @@ export function Game({ account }: GameProps = {}) {
         </div>
       </header>
 
-      {adventureRun && dungeonViewOpen && !dungeonResult ? (
+      {inDungeonRun ? (
         <DungeonRun
           run={adventureRun}
           perksEquipped={progress.perksEquipped}
@@ -455,6 +485,8 @@ export function Game({ account }: GameProps = {}) {
         열린 숫자를 누르면 주변을 한 번에 점검(코드)해요. PC는 좌클릭=열기, 우클릭=깃발.
       </p>
       </>
+      )}
+        </>
       )}
 
       {reward && deltas && (state.status === 'won' || state.status === 'lost') && (

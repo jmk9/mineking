@@ -137,7 +137,7 @@ export function DungeonRun({
         <button
           className="dungeon-forfeit"
           onClick={() => {
-            const msg = `사냥터를 그만두면 지금까지 받은 보상(${run.pendingCoins} 코인 · ${run.pendingXp} XP)만 정산되고 런이 끝나요. 그만둘까요?`;
+            const msg = `던전을 그만두면 지금까지 받은 보상(${run.pendingCoins} 코인 · ${run.pendingXp} XP)만 정산되고 런이 끝나요. 그만둘까요?`;
             if (confirm(msg)) onForfeit();
           }}
         >

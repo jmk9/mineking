@@ -16,7 +16,7 @@ export function Dungeons({ activeRun, onStart, onResume, onClose }: Props) {
     <div className="overlay" onClick={onClose}>
       <div className="dungeons-card" onClick={(e) => e.stopPropagation()}>
         <div className="picker-head">
-          <span>사냥터</span>
+          <span>던전</span>
           <button className="picker-close" onClick={onClose}>
             ✕
           </button>

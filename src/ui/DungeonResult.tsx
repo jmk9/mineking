@@ -17,7 +17,7 @@ export function DungeonResult({ run, outcome, onRetry, onClose }: Props) {
     <div className="overlay">
       <div className="result-card">
         <div className="result-title">
-          {won ? '🏆 사냥터 완수!' : '💥 도전 실패'}
+          {won ? '🏆 던전 완수!' : '💥 도전 실패'}
         </div>
         {!won && (
           <p className="result-sub">

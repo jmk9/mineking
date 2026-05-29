@@ -34,11 +34,15 @@ export function ThemePicker({
     <div className="overlay" onClick={onClose}>
       <div className="picker-card" onClick={(e) => e.stopPropagation()}>
         <div className="picker-head">
-          <span>상점</span>
+          <span>대장간</span>
           <span className="picker-coins">🪙 {coins}</span>
           <button className="picker-close" onClick={onClose}>
             ✕
           </button>
+        </div>
+
+        <div className="smithy-coming-soon">
+          ⚒️ <b>장비 시스템</b>은 곧 등장해요. 지금은 <b>테마</b>를 꾸며볼 수 있어요.
         </div>
 
         <div className="shop-section-title">테마</div>
