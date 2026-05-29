@@ -15,8 +15,8 @@ export function ResultOverlay({ status, score, deltas, balance, onNewGame }: Pro
   const leveledUp = deltas.levelAfter > deltas.levelBefore;
 
   return (
-    <div className="overlay" onClick={onNewGame}>
-      <div className="result-card" onClick={(e) => e.stopPropagation()}>
+    <div className="overlay">
+      <div className="result-card">
         <div className="result-title">{won ? '🎉 클리어!' : '💥 실패'}</div>
 
         {leveledUp && (

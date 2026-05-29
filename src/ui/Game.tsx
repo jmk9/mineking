@@ -187,6 +187,8 @@ export function Game({ account }: GameProps = {}) {
     let next: GameState;
     if (cell.state === 'revealed') {
       next = chord(state, r, c); // chording works in both modes
+    } else if (state.status === 'ready') {
+      next = reveal(state, r, c); // first click always opens, even in flag mode
     } else if (mode === 'flag') {
       next = toggleFlag(state, r, c);
     } else {
