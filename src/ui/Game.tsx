@@ -182,13 +182,17 @@ export function Game({ account }: GameProps = {}) {
     if (themeId === id) selectTheme('classic');
   };
 
-  const handleTap = (r: number, c: number) => {
+  const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' = 'auto') => {
     const cell = state.grid[r][c];
     let next: GameState;
     if (cell.state === 'revealed') {
       next = chord(state, r, c); // chording works in both modes
     } else if (state.status === 'ready') {
       next = reveal(state, r, c); // first click always opens, even in flag mode
+    } else if (kind === 'reveal') {
+      next = reveal(state, r, c); // mouse left button
+    } else if (kind === 'flag') {
+      next = toggleFlag(state, r, c); // mouse right button
     } else if (mode === 'flag') {
       next = toggleFlag(state, r, c);
     } else {
@@ -322,7 +326,10 @@ export function Game({ account }: GameProps = {}) {
           🚩 깃발
         </button>
       </div>
-      <p className="hint">깃발 모드에서 열린 숫자를 누르면 주변을 한 번에 점검(코드)해요.</p>
+      <p className="hint">
+        깃발 모드여도 <b>첫 클릭은 항상 열려요</b>.<br />
+        열린 숫자를 누르면 주변을 한 번에 점검(코드)해요. PC는 좌클릭=열기, 우클릭=깃발.
+      </p>
 
       {reward && deltas && (state.status === 'won' || state.status === 'lost') && (
         <ResultOverlay

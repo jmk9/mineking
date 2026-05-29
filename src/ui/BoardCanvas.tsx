@@ -4,6 +4,8 @@ import { drawBoard, pointToCell } from '../render/renderer';
 import type { Theme } from '../render/theme';
 import { useGlyphs } from './useGlyphs';
 
+export type TapKind = 'auto' | 'reveal' | 'flag';
+
 interface Props {
   state: GameState;
   cellSize: number;
@@ -11,7 +13,7 @@ interface Props {
   loupeEnabled?: boolean;
   zoom: number;
   onZoomChange: (z: number) => void;
-  onCellTap: (r: number, c: number) => void;
+  onCellTap: (r: number, c: number, kind: TapKind) => void;
 }
 
 const TAP_MOVE_TOLERANCE = 14; // px; beyond this a pointer gesture is a scroll, not a tap
@@ -156,7 +158,12 @@ export function BoardCanvas({
     const end = localPoint(e);
     if (Math.hypot(end.x - start.x, end.y - start.y) > TAP_MOVE_TOLERANCE) return;
     const cell = pointToCell(end.x, end.y, state, cellSize);
-    if (cell) onCellTap(cell.r, cell.c);
+    if (!cell) return;
+    let kind: TapKind = 'auto';
+    if (e.pointerType === 'mouse') {
+      kind = e.button === 2 ? 'flag' : 'reveal';
+    }
+    onCellTap(cell.r, cell.c, kind);
   };
 
   const cancelSingle = () => {
@@ -235,6 +242,7 @@ export function BoardCanvas({
     <>
       <canvas
         ref={canvasRef}
+        onContextMenu={(e) => e.preventDefault()}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

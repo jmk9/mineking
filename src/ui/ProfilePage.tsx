@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { ACHIEVEMENTS } from '../progress/achievements';
+import {
+  ACHIEVEMENTS,
+  achievementGoalAtLevel,
+  currentAchievementLevel,
+  isAchievementDoneAtLevel,
+} from '../progress/achievements';
 import { levelInfo, perkSlots } from '../progress/level';
 import { PERKS } from '../progress/perks';
 import { getQuest } from '../progress/quests';
@@ -111,32 +116,58 @@ export function ProfilePage({ progress, coins, account, onTogglePerk, onOpenRena
             </ul>
           )}
 
-          {tab === 'achievements' && (
-            <div className="ach-list">
-              {ACHIEVEMENTS.map((a) => {
-                const tier = progress.achievements[a.id] ?? 0;
-                const value = a.value(s);
-                const maxed = tier >= a.goals.length;
-                const goal = maxed ? a.goals[a.goals.length - 1] : a.goals[tier];
-                return (
-                  <div key={a.id} className={`ach-row ${tier > 0 ? 'earned' : ''}`}>
-                    <span className="ach-icon">{a.icon}</span>
-                    <div className="ach-meta">
-                      <div className="ach-top">
-                        <span className="ach-name">{a.name}</span>
-                        <span className="ach-tier">{maxed ? 'MAX' : tier > 0 ? `T${tier}` : ''}</span>
-                      </div>
-                      <div className="ach-desc">{a.desc}</div>
-                      <Bar pct={maxed ? 100 : (value / goal) * 100} />
-                      <div className="ach-prog">
-                        {Math.min(value, goal).toLocaleString()} / {goal.toLocaleString()}
+          {tab === 'achievements' && (() => {
+            const achLevel = currentAchievementLevel(progress.achievements);
+            const maxLevel = Math.max(...ACHIEVEMENTS.map((a) => a.goals.length));
+            const isMaxLevel = achLevel > maxLevel;
+            return (
+              <div className="ach-list">
+                <div className="ach-level-header">
+                  <span className="ach-level-badge">🏆 훈장 레벨 {Math.min(achLevel, maxLevel)}</span>
+                  {!isMaxLevel && (
+                    <span className="ach-level-sub">모든 임무 완료 시 다음 레벨 해금</span>
+                  )}
+                </div>
+
+                {ACHIEVEMENTS.map((a) => {
+                  const claimed = progress.achievements[a.id] ?? 0;
+                  const value = a.value(s);
+                  const goal = achievementGoalAtLevel(a, achLevel);
+                  const done = isAchievementDoneAtLevel(a, claimed, achLevel);
+                  const capped = achLevel >= a.goals.length;
+                  return (
+                    <div key={a.id} className={`ach-row ${done ? 'earned' : ''}`}>
+                      <span className="ach-icon">{a.icon}</span>
+                      <div className="ach-meta">
+                        <div className="ach-top">
+                          <span className="ach-name">{a.name}</span>
+                          <span className="ach-tier">
+                            {done ? (capped ? 'MAX' : '✓') : `Lv ${achLevel}`}
+                          </span>
+                        </div>
+                        <div className="ach-desc">{a.desc}</div>
+                        <Bar pct={done ? 100 : (value / goal) * 100} />
+                        <div className="ach-prog">
+                          {Math.min(value, goal).toLocaleString()} / {goal.toLocaleString()}
+                        </div>
                       </div>
                     </div>
+                  );
+                })}
+
+                {!isMaxLevel && (
+                  <div className="ach-locked-row">
+                    🔒 Lv {achLevel + 1} 잠금 — 현재 레벨 임무를 모두 완료해야 해금
                   </div>
-                );
-              })}
-            </div>
-          )}
+                )}
+                {isMaxLevel && (
+                  <div className="ach-locked-row">
+                    🌟 모든 훈장 레벨을 달성했어요!
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {tab === 'perks' && (
             <div className="perk-list">

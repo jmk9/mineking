@@ -87,3 +87,37 @@ export function tiersMet(goals: number[], value: number): number {
   for (const g of goals) if (value >= g) n++;
   return n;
 }
+
+/** Has the given achievement satisfied the requirement for `level`? */
+export function isAchievementDoneAtLevel(
+  a: Achievement,
+  claimedTiers: number,
+  level: number,
+): boolean {
+  // Achievements with fewer tiers than the level are auto-complete (capped at MAX).
+  return claimedTiers >= Math.min(level, a.goals.length);
+}
+
+/**
+ * Current achievement level the player is working on. Starts at 1.
+ * Advances by one only when every achievement has reached the level's
+ * tier (capped at each achievement's own MAX).
+ */
+export function currentAchievementLevel(claimed: Record<string, number>): number {
+  let level = 1;
+  const MAX_LEVEL = 50; // safety bound
+  while (level <= MAX_LEVEL) {
+    const allDone = ACHIEVEMENTS.every((a) =>
+      isAchievementDoneAtLevel(a, claimed[a.id] ?? 0, level),
+    );
+    if (!allDone) return level;
+    level++;
+  }
+  return level;
+}
+
+/** The threshold this achievement uses at the given level (capped at MAX tier). */
+export function achievementGoalAtLevel(a: Achievement, level: number): number {
+  return a.goals[Math.min(level, a.goals.length) - 1];
+}
+
