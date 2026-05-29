@@ -9,7 +9,7 @@ Pick from a variety of themes, mix and match your own from scratch, or even
 The flag shape, the number colors, the look of the board and the whole app —
 all of it bends to your taste. Same Minesweeper, but never the same game twice.
 
-**▶ Play now: https://mineking.netlify.app/**
+**▶ Play now: https://mineking.alsrb4696.workers.dev/**
 
 ![Preview](figure/preview.png)
 
