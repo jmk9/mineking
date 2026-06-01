@@ -52,11 +52,8 @@ export function Dungeons({ activeRun, onStart, onResume, onClose }: Props) {
                 onStart(d.id);
               }}
             >
-              <div
-                className="dungeon-card-image"
-                style={{ backgroundImage: `url(${d.imageUrl})` }}
-                aria-label={d.subtitle}
-              >
+              <div className="dungeon-card-image" aria-label={d.subtitle}>
+                <img src={d.imageUrl} alt="" loading="lazy" />
                 <span className="dungeon-card-rank">Lv {d.rank}</span>
                 <span className="dungeon-card-size">{SIZE_CHIP[d.sizeTier]}</span>
                 <span className="dungeon-card-heal">{HEAL_CHIP[d.hpRegenTier]}</span>

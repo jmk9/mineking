@@ -1511,10 +1511,15 @@ button:active {
 .dungeon-card-image {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
-  background-size: cover;
-  background-position: center;
   background-color: var(--bg);
+}
+
+/* The <img> drives the slot's height (sources are 1:1 PNGs). This keeps
+   the whole illustration visible — no center-crop, no top/bottom cut. */
+.dungeon-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Soft shade at the bottom of the image so the heal chip stays legible
