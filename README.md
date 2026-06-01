@@ -13,6 +13,8 @@ all of it bends to your taste. Same Minesweeper, but never the same game twice.
 
 ![Preview](figure/preview.png)
 
+<sub>Preview updated: 2026-06-01</sub>
+
 ## Features
 
 - **Classic Minesweeper rules** — first-click safety, flag mode, chording
