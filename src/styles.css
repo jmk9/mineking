@@ -1805,6 +1805,12 @@ button:active {
 .home-card {
   position: relative;
   aspect-ratio: 1 / 1;
+  /* When the viewport is short (typical desktop window, landscape phone)
+     a strict 1:1 aspect would push the second row of cards below the
+     fold. Cap the per-card height so the 2×2 grid always fits inside
+     the visible area; cards stay square on tall mobile screens. The
+     reserved 220px covers header + gaps + padding + a small buffer. */
+  max-height: calc((100dvh - 220px) / 2);
   background: var(--panel);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
