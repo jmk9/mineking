@@ -1,5 +1,5 @@
 import { DUNGEONS } from '../dungeon/catalog';
-import type { AdventureRun } from '../dungeon/types';
+import type { AdventureRun, HpRegenTier, SizeTier } from '../dungeon/types';
 
 interface Props {
   /** Currently in-progress run (null = none), so we can offer "이어하기". */
@@ -10,6 +10,19 @@ interface Props {
   onResume: () => void;
   onClose: () => void;
 }
+
+/** Short on-image labels. The full sentence still lives in d.subtitle for
+ *  screen readers — these chips are the visual at-a-glance read. */
+const SIZE_CHIP: Record<SizeTier, string> = {
+  small: '초급',
+  medium: '중급',
+  large: '고급',
+};
+const HEAL_CHIP: Record<HpRegenTier, string> = {
+  easy: '❤️ +30',
+  medium: '❤️ +15',
+  hard: '❤️ ✕',
+};
 
 export function Dungeons({ activeRun, onStart, onResume, onClose }: Props) {
   return (
@@ -42,12 +55,14 @@ export function Dungeons({ activeRun, onStart, onResume, onClose }: Props) {
               <div
                 className="dungeon-card-image"
                 style={{ backgroundImage: `url(${d.imageUrl})` }}
+                aria-label={d.subtitle}
               >
                 <span className="dungeon-card-rank">Lv {d.rank}</span>
+                <span className="dungeon-card-size">{SIZE_CHIP[d.sizeTier]}</span>
+                <span className="dungeon-card-heal">{HEAL_CHIP[d.hpRegenTier]}</span>
               </div>
               <div className="dungeon-card-text">
                 <span className="dungeon-card-name">{d.name}</span>
-                <span className="dungeon-card-sub">{d.subtitle}</span>
               </div>
             </button>
           ))}
