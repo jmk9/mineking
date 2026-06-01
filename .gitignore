@@ -15,3 +15,9 @@ TODO.md
 scripts/
 .omc/
 figure/maps/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
