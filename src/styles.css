@@ -1811,64 +1811,73 @@ button:active {
      the visible area; cards stay square on tall mobile screens. The
      reserved 220px covers header + gaps + padding + a small buffer. */
   max-height: calc((100dvh - 220px) / 2);
-  background: var(--panel);
+  background-color: var(--panel);
+  background-size: cover;
+  background-position: center;
   border: 1px solid var(--panel-border);
   border-radius: var(--radius);
-  color: var(--text);
+  color: #fff; /* over the image — white reads on every tint */
   cursor: pointer;
   padding: 14px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 2px;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   text-align: left;
 }
 
-/* Soft tinted halo per card so the four tiles are visually distinct. */
-.home-card::before {
+/* Background illustrations per card. Files live in public/main/. */
+.home-card-profile  { background-image: url('/main/profile.png'); }
+.home-card-smithy   { background-image: url('/main/smithy.png'); }
+.home-card-training { background-image: url('/main/training.png'); }
+.home-card-dungeon  { background-image: url('/main/dungeon.png'); }
+
+/* Dark gradient at the bottom so the title/desc are always readable
+   regardless of the underlying illustration's palette. */
+.home-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(80% 60% at 70% 20%, var(--home-tint, transparent), transparent 70%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.35) 38%,
+    rgba(0, 0, 0, 0) 65%
+  );
   pointer-events: none;
 }
-
-.home-card-profile  { --home-tint: rgba(56, 189, 248, 0.22); } /* sky */
-.home-card-smithy   { --home-tint: rgba(251, 146, 60, 0.22); } /* orange */
-.home-card-training { --home-tint: rgba(132, 204, 22, 0.22); } /* lime */
-.home-card-dungeon  { --home-tint: rgba(167, 139, 250, 0.22); } /* violet */
 
 .home-card:hover {
   border-color: var(--accent);
   transform: translateY(-1px);
 }
 
-.home-card-icon {
-  font-size: 32px;
-  line-height: 1;
-  align-self: flex-start;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
-}
-
 .home-card-title {
-  font-size: 16px;
+  position: relative; /* lift above ::after */
+  z-index: 1;
+  font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 
 .home-card-desc {
+  position: relative;
+  z-index: 1;
   font-size: 11px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.88);
   line-height: 1.35;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .home-card-badge {
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 2; /* sit above the bottom-fade overlay */
   background: var(--accent);
   color: var(--accent-text);
   font-size: 10px;
@@ -1876,6 +1885,7 @@ button:active {
   padding: 2px 8px;
   border-radius: 999px;
   letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 /* The 🏠 back-to-home pill that lives in the training appbar. */
@@ -1909,8 +1919,7 @@ button:active {
 }
 
 @media (max-width: 360px) {
-  .home-card-icon { font-size: 28px; }
-  .home-card-title { font-size: 14px; }
+  .home-card-title { font-size: 16px; }
   .home-card-desc { font-size: 10px; }
 }
 
