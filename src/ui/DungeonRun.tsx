@@ -8,6 +8,7 @@ import type { Theme } from '../render/theme';
 import { BoardCanvas } from './BoardCanvas';
 import { useElementWidth } from './useElementWidth';
 import { sfxPlay } from '../audio/sfx';
+import { loadStartMode } from '../storage/prefs';
 
 interface Props {
   run: AdventureRun;
@@ -55,7 +56,10 @@ export function DungeonRun({
   onForfeit,
 }: Props) {
   const [run, setRun] = useState<AdventureRun>(initialRun);
-  const [mode, setMode] = useState<Mode>('open');
+  // Initial mode follows the user's default; the per-board reset that used
+  // to live in the useEffect below is gone on purpose — picking 깃발 once
+  // should stay 깃발 for the rest of the run.
+  const [mode, setMode] = useState<Mode>(() => loadStartMode());
   const dungeon = dungeonOf(run);
 
   // Fresh minesweeper game per board.
@@ -70,14 +74,17 @@ export function DungeonRun({
   }, [availWidth, board.cols]);
   const cellSize = baseCell * zoom;
 
-  // When the run advances to a new board, rebuild the game state.
+  // When the run advances to a new board, rebuild the game state. Mode is
+  // intentionally NOT reset here — it carries over from the previous board.
   useEffect(() => {
     setBoard(createGame(boardConfigFor(run)));
-    setMode('open');
   }, [run.dungeonId, run.boardIndex]);
 
-  const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' = 'auto') => {
+  const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' | 'longpress' = 'auto') => {
     const cell = board.grid[r][c];
+    // Long-press inverts the current mode (same convention as 수련장).
+    const effectiveKind: 'auto' | 'reveal' | 'flag' =
+      kind === 'longpress' ? (mode === 'flag' ? 'reveal' : 'flag') : kind;
     let action: 'reveal' | 'flag' | 'unflag' | 'chord';
     let next: GameState;
     if (cell.state === 'revealed') {
@@ -86,10 +93,10 @@ export function DungeonRun({
     } else if (board.status === 'ready') {
       next = reveal(board, r, c);
       action = 'reveal';
-    } else if (kind === 'reveal') {
+    } else if (effectiveKind === 'reveal') {
       next = reveal(board, r, c);
       action = 'reveal';
-    } else if (kind === 'flag') {
+    } else if (effectiveKind === 'flag') {
       next = toggleFlag(board, r, c);
       action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else if (mode === 'flag') {
@@ -137,6 +144,12 @@ export function DungeonRun({
   const hpPct = Math.round((run.hp / run.maxHp) * 100);
   const hpColor = hpPct > 60 ? '#22c55e' : hpPct > 30 ? '#f59e0b' : '#ef4444';
 
+  // 💣 counter: mines on this board minus flags placed. Mirrors the
+  // 수련장 HUD so the player has the same read on what's left.
+  let flagsPlaced = 0;
+  for (const row of board.grid) for (const c of row) if (c.state === 'flagged') flagsPlaced++;
+  const minesLeft = board.mines - flagsPlaced;
+
   return (
     <div className="dungeon-run">
       <div className="dungeon-run-head">
@@ -161,11 +174,16 @@ export function DungeonRun({
         </button>
       </div>
 
-      <div className="hp-bar" aria-label={`HP ${run.hp}/${run.maxHp}`}>
-        <div className="hp-bar-fill" style={{ width: `${hpPct}%`, background: hpColor }} />
-        <span className="hp-bar-text">
-          ❤️ {run.hp} / {run.maxHp}
-        </span>
+      <div className="dungeon-stats">
+        <div className="hp-bar" aria-label={`HP ${run.hp}/${run.maxHp}`}>
+          <div className="hp-bar-fill" style={{ width: `${hpPct}%`, background: hpColor }} />
+          <span className="hp-bar-text">
+            ❤️ {run.hp} / {run.maxHp}
+          </span>
+        </div>
+        <div className="dungeon-mines" aria-label={`남은 지뢰 ${minesLeft}`}>
+          💣 {minesLeft}
+        </div>
       </div>
 
       <div className="board-wrap" ref={boardWrapRef} style={{ background: theme.bg }}>

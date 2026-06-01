@@ -17,6 +17,9 @@ import {
   saveBgmVolume,
   loadSfxEnabled,
   saveSfxEnabled,
+  loadStartMode,
+  saveStartMode,
+  type StartMode,
 } from '../storage/prefs';
 import { loadCustomThemes, saveCustomThemes } from '../storage/customThemes';
 import { loadUnlocks, saveUnlocks } from '../storage/unlocks';
@@ -97,7 +100,8 @@ interface GameProps {
 export function Game({ account }: GameProps = {}) {
   const [difficulty, setDifficulty] = useState<DifficultyName>('beginner');
   const [state, setState] = useState<GameState>(() => createGame(DIFFICULTIES.beginner));
-  const [mode, setMode] = useState<Mode>('open');
+  const [startMode, setStartMode] = useState<StartMode>(() => loadStartMode());
+  const [mode, setMode] = useState<Mode>(startMode);
   const [coins, setCoins] = useState<number>(() => loadCoins());
   const [reward, setReward] = useState<ScoreBreakdown | null>(null);
   const [deltas, setDeltas] = useState<ResultDeltas | null>(null);
@@ -273,8 +277,14 @@ export function Game({ account }: GameProps = {}) {
   const newGame = (d: DifficultyName = difficulty) => {
     setDifficulty(d);
     setState(createGame(DIFFICULTIES[d]));
+    setMode(startMode); // every new game starts in the user's preferred mode
     setReward(null);
     setDeltas(null);
+  };
+
+  const onStartModeChange = (m: StartMode) => {
+    setStartMode(m);
+    saveStartMode(m);
   };
 
   const selectTheme = (id: string) => {
@@ -312,8 +322,12 @@ export function Game({ account }: GameProps = {}) {
     if (themeId === id) selectTheme('classic');
   };
 
-  const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' = 'auto') => {
+  const handleTap = (r: number, c: number, kind: 'auto' | 'reveal' | 'flag' | 'longpress' = 'auto') => {
     const cell = state.grid[r][c];
+    // Long-press inverts the current mode: hold while in 깃발 mode → reveal;
+    // hold while in 오픈 mode → toggle a flag.
+    const effectiveKind: 'auto' | 'reveal' | 'flag' =
+      kind === 'longpress' ? (mode === 'flag' ? 'reveal' : 'flag') : kind;
     let action: 'reveal' | 'flag' | 'unflag' | 'chord';
     let next: GameState;
     if (cell.state === 'revealed') {
@@ -322,10 +336,10 @@ export function Game({ account }: GameProps = {}) {
     } else if (state.status === 'ready') {
       next = reveal(state, r, c); // first click always opens, even in flag mode
       action = 'reveal';
-    } else if (kind === 'reveal') {
+    } else if (effectiveKind === 'reveal') {
       next = reveal(state, r, c); // mouse left button
       action = 'reveal';
-    } else if (kind === 'flag') {
+    } else if (effectiveKind === 'flag') {
       next = toggleFlag(state, r, c); // mouse right button
       action = cell.state === 'flagged' ? 'unflag' : 'flag';
     } else if (mode === 'flag') {
@@ -622,6 +636,8 @@ export function Game({ account }: GameProps = {}) {
           onBgmVolumeChange={onBgmVolumeChange}
           sfxEnabled={sfxEnabled}
           onSfxToggle={onSfxToggle}
+          startMode={startMode}
+          onStartModeChange={onStartModeChange}
           account={account}
           canInstall={canInstall}
           onInstall={install}

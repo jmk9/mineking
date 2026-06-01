@@ -52,7 +52,15 @@ button:active {
 .game {
   max-width: 520px;
   margin: 0 auto;
-  padding: 14px 14px 28px;
+  /* Push content below the iOS status bar / notch when running as a PWA
+     (apple-mobile-web-app-status-bar-style is black-translucent so the
+     status bar overlays our content otherwise). The fallback values keep
+     non-iOS browsers and desktop unchanged. */
+  padding:
+    max(14px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1434,6 +1442,18 @@ button:active {
   accent-color: var(--accent);
 }
 
+/* Compact two-button segmented control inside a setting row. The global
+   .segmented stretches to fill — here we want it to hug its content. */
+.start-mode-seg {
+  flex-shrink: 0;
+  width: auto;
+}
+
+.start-mode-seg button {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
 /* ---------- Dungeons (던전) ---------- */
 .dungeons-card {
   background: var(--panel);
@@ -1608,6 +1628,29 @@ button:active {
 .dungeon-forfeit:hover {
   color: #fca5a5;
   border-color: #ef4444;
+}
+
+/* HUD row inside a dungeon run: HP bar (stretches) + mines counter. */
+.dungeon-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dungeon-stats .hp-bar {
+  flex: 1;
+}
+
+.dungeon-mines {
+  flex-shrink: 0;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 .hp-bar {

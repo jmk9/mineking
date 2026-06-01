@@ -3,6 +3,9 @@ const LOUPE_ENABLED_KEY = 'ms_loupe_enabled_v1';
 const BGM_ENABLED_KEY = 'ms_bgm_enabled_v1';
 const BGM_VOLUME_KEY = 'ms_bgm_volume_v1';
 const SFX_ENABLED_KEY = 'ms_sfx_enabled_v1';
+const START_MODE_KEY = 'ms_start_mode_v1';
+
+export type StartMode = 'open' | 'flag';
 
 export function loadThemeId(): string | null {
   try {
@@ -85,6 +88,23 @@ export function loadSfxEnabled(): boolean {
 export function saveSfxEnabled(v: boolean): void {
   try {
     localStorage.setItem(SFX_ENABLED_KEY, v ? '1' : '0');
+  } catch {
+    // ignore
+  }
+}
+
+export function loadStartMode(): StartMode {
+  try {
+    const v = localStorage.getItem(START_MODE_KEY);
+    return v === 'flag' ? 'flag' : 'open';
+  } catch {
+    return 'open';
+  }
+}
+
+export function saveStartMode(v: StartMode): void {
+  try {
+    localStorage.setItem(START_MODE_KEY, v);
   } catch {
     // ignore
   }

@@ -4,7 +4,7 @@ import { drawBoard, pointToCell } from '../render/renderer';
 import type { Theme } from '../render/theme';
 import { useGlyphs } from './useGlyphs';
 
-export type TapKind = 'auto' | 'reveal' | 'flag';
+export type TapKind = 'auto' | 'reveal' | 'flag' | 'longpress';
 
 interface Props {
   state: GameState;
@@ -22,6 +22,7 @@ const LOUPE_MAG = 2.5; // magnification factor
 const LOUPE_OFFSET_Y = 28; // how far above the finger the loupe floats
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 2.0;
+const LONG_PRESS_MS = 450; // hold this long to invert the current mode
 
 interface LoupePos {
   clientX: number;
@@ -53,6 +54,16 @@ export function BoardCanvas({
   // Multi-touch pinch tracking
   const pointers = useRef<Map<number, Point>>(new Map());
   const pinchRef = useRef<{ initialDist: number; initialZoom: number } | null>(null);
+  // Long-press: timer + a flag so the eventual pointerup skips the normal tap.
+  const longPressTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
+
+  const clearLongPress = () => {
+    if (longPressTimer.current != null) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
 
   const boardCssW = state.cols * cellSize;
   const boardCssH = state.rows * cellSize;
@@ -135,15 +146,38 @@ export function BoardCanvas({
   const startSingle = (e: React.PointerEvent) => {
     const p = localPoint(e);
     downPos.current = p;
+    longPressFired.current = false;
     if (loupeEnabled) {
       drawLoupe(p.x, p.y);
       setLoupe({ clientX: e.clientX, clientY: e.clientY });
+    }
+    // Touch-only long-press. Mouse already has right-click for flag, so
+    // there's no need to repurpose hold-to-flag on desktop.
+    if (e.pointerType !== 'mouse') {
+      clearLongPress();
+      longPressTimer.current = window.setTimeout(() => {
+        const start = downPos.current;
+        if (!start) return;
+        const cell = pointToCell(start.x, start.y, state, cellSize);
+        if (!cell) return;
+        longPressFired.current = true;
+        // Tiny haptic so the user knows the long-press registered (Android
+        // honors this; iOS silently ignores).
+        try { navigator.vibrate?.(15); } catch { /* ignore */ }
+        setLoupe(null);
+        onCellTap(cell.r, cell.c, 'longpress');
+      }, LONG_PRESS_MS);
     }
   };
 
   const moveSingle = (e: React.PointerEvent) => {
     if (!downPos.current) return;
     const p = localPoint(e);
+    // Any meaningful drag means the user is panning, not holding — cancel
+    // the pending long-press so a swipe never accidentally toggles.
+    if (Math.hypot(p.x - downPos.current.x, p.y - downPos.current.y) > TAP_MOVE_TOLERANCE) {
+      clearLongPress();
+    }
     if (loupeEnabled) {
       drawLoupe(p.x, p.y);
       setLoupe({ clientX: e.clientX, clientY: e.clientY });
@@ -151,10 +185,16 @@ export function BoardCanvas({
   };
 
   const endSingle = (e: React.PointerEvent) => {
+    clearLongPress();
     const start = downPos.current;
     downPos.current = null;
     setLoupe(null);
     if (!start) return;
+    // Long-press already dispatched the action — don't fire a normal tap on lift.
+    if (longPressFired.current) {
+      longPressFired.current = false;
+      return;
+    }
     const end = localPoint(e);
     if (Math.hypot(end.x - start.x, end.y - start.y) > TAP_MOVE_TOLERANCE) return;
     const cell = pointToCell(end.x, end.y, state, cellSize);
@@ -167,7 +207,9 @@ export function BoardCanvas({
   };
 
   const cancelSingle = () => {
+    clearLongPress();
     downPos.current = null;
+    longPressFired.current = false;
     setLoupe(null);
   };
 
@@ -247,7 +289,15 @@ export function BoardCanvas({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
-        style={{ touchAction: 'pan-x pan-y', display: 'block' }}
+        style={{
+          touchAction: 'pan-x pan-y',
+          display: 'block',
+          // Block iOS Safari's long-press callout/selection so our own
+          // long-press handler can run without the share menu intercepting.
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
       />
       <canvas ref={loupeRef} style={loupeStyle} hidden={!loupe} />
     </>

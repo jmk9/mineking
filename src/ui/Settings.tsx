@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { InstallHelp } from './InstallHelp';
 import type { Platform } from './usePWAInstall';
+import type { StartMode } from '../storage/prefs';
 
 interface Props {
   loupeEnabled: boolean;
@@ -11,6 +12,8 @@ interface Props {
   onBgmVolumeChange: (volume: number) => void;
   sfxEnabled: boolean;
   onSfxToggle: (enabled: boolean) => void;
+  startMode: StartMode;
+  onStartModeChange: (m: StartMode) => void;
   account?: { name: string; onLogout: () => void };
   canInstall?: boolean;
   onInstall?: () => void;
@@ -28,6 +31,8 @@ export function Settings({
   onBgmVolumeChange,
   sfxEnabled,
   onSfxToggle,
+  startMode,
+  onStartModeChange,
   account,
   canInstall,
   onInstall,
@@ -81,6 +86,27 @@ export function Settings({
           checked={sfxEnabled}
           onChange={onSfxToggle}
         />
+
+        <div className="setting-row">
+          <div className="setting-text">
+            <span className="setting-label">기본 시작 모드</span>
+            <span className="setting-desc">새 게임/던전에서 처음 잡히는 모드</span>
+          </div>
+          <div className="segmented start-mode-seg">
+            <button
+              className={startMode === 'open' ? 'active' : ''}
+              onClick={() => onStartModeChange('open')}
+            >
+              ⛏️ 오픈
+            </button>
+            <button
+              className={startMode === 'flag' ? 'active' : ''}
+              onClick={() => onStartModeChange('flag')}
+            >
+              🚩 깃발
+            </button>
+          </div>
+        </div>
 
         {bgmEnabled && (
           <div className="setting-row">
